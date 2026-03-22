@@ -1,3 +1,49 @@
 // 공유 타입 정의 — 컴포넌트·훅 내부에 공유 타입 정의 금지, 여기에만 작성
-// Phase 1-a: 빈 파일 (Story 1.2에서 CardData 등 추가)
-export {}
+
+export type CardType = 'intro' | 'developer' | 'career' | 'projects' | 'topic'
+
+export type CardData = {
+  id: string
+  type: CardType
+  keyword: string
+  detail: string
+  displayOrder: number
+}
+
+export type CareerData = {
+  id: string
+  company: string
+  role: string
+  period: string
+  description: string
+  displayOrder: number
+}
+
+export type ProjectData = {
+  id: string
+  title: string
+  description: string
+  techStack: string[]
+  thumbnailUrl: string
+  displayOrder: number
+}
+
+export type ChatMessage = {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  createdAt: Date
+}
+
+export interface UseDataResult<T> {
+  data: T[]
+  loading: boolean
+  error: string | null
+}
+
+export interface PortfolioState {
+  currentCardIndex: number // 0~4
+  activeLayer: 'career' | 'projects' | null // null = 레이어 닫힘
+  isChatbotOpen: boolean
+}
+// 주의: isLayerOpen 변수 별도 생성 금지 → activeLayer !== null 인라인 사용
