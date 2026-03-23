@@ -8,14 +8,15 @@ export type ToolCall = { name: string; args: Record<string, unknown> }
 
 interface ChatbotToolBridgeProps {
   toolCalls: ToolCall[]
+  cardCount?: number
 }
 
-export function ChatbotToolBridge({ toolCalls }: ChatbotToolBridgeProps) {
+export function ChatbotToolBridge({ toolCalls, cardCount = 5 }: ChatbotToolBridgeProps) {
   useEffect(() => {
     for (const call of toolCalls) {
       if (call.name === 'highlight_card') {
         const index = call.args.index as number
-        if (typeof index === 'number' && index >= 0 && index <= 4) {
+        if (typeof index === 'number' && index >= 0 && index < cardCount) {
           portfolioEventBus.emit('highlight_card', { index })
         }
       }

@@ -10,11 +10,12 @@ import { ChatbotToolBridge, type ToolCall } from './ChatbotToolBridge'
 interface ChatbotPanelProps {
   isOpen: boolean
   onClose: () => void
+  cardCount?: number
 }
 
 const TOOLS_PREFIX = '__TOOLS__:'
 
-export function ChatbotPanel({ isOpen, onClose }: ChatbotPanelProps) {
+export function ChatbotPanel({ isOpen, onClose, cardCount = 5 }: ChatbotPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [isWaiting, setIsWaiting] = useState(false)
@@ -128,7 +129,7 @@ export function ChatbotPanel({ isOpen, onClose }: ChatbotPanelProps) {
 
   return (
     <>
-      <ChatbotToolBridge toolCalls={activeToolCalls} />
+      <ChatbotToolBridge toolCalls={activeToolCalls} cardCount={cardCount} />
 
       <AnimatePresence>
         {isOpen && (

@@ -69,7 +69,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <ChatbotPanel isOpen={isChatbotOpen} onClose={toggleChatbot} />
+      <ChatbotPanel isOpen={isChatbotOpen} onClose={toggleChatbot} cardCount={cards.length} />
 
       {!isChatbotOpen && (
         <button
