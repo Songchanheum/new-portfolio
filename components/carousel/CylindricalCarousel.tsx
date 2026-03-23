@@ -11,18 +11,23 @@ import { useCylindricalDrag } from '@/hooks/interactions/useCylindricalDrag'
 import { PortfolioCard } from './PortfolioCard'
 import { CardDetailModal } from './CardDetailModal'
 
-const CARD_COUNT = 5
-const ANGLE_PER_CARD = 360 / CARD_COUNT
 const CARD_WIDTH = 320
 const CAROUSEL_RADIUS = 350
 
-const SCATTER_OFFSETS = [
+const BASE_SCATTER: { x: number; y: number }[] = [
   { x: -320, y: -180 },
   { x: 280, y: -200 },
   { x: -250, y: 210 },
   { x: 310, y: 160 },
   { x: 40, y: -260 },
-] as const
+]
+
+function getScatterOffset(i: number): { x: number; y: number } {
+  if (i < BASE_SCATTER.length) return BASE_SCATTER[i]
+  // 5개 초과 카드는 각도 기반으로 랜덤하게 분산
+  const angle = (i / 8) * Math.PI * 2
+  return { x: Math.round(Math.cos(angle) * 300), y: Math.round(Math.sin(angle) * 220) }
+}
 
 interface CylindricalCarouselProps {
   cards: CardData[]
@@ -54,8 +59,11 @@ export default function CylindricalCarousel({
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
+  const cardCount = cards.length
+  const anglePerCard = cardCount > 0 ? 360 / cardCount : 72
+
   const { springRotation, onPointerDown, onPointerMove, onPointerUp, goToIndex } =
-    useCylindricalDrag(setCurrentCardIndex, isEntryComplete, CARD_COUNT, isCardHovered)
+    useCylindricalDrag(setCurrentCardIndex, isEntryComplete, cardCount, isCardHovered)
 
   const handleCardClick = (card: CardData, index: number) => {
     if (index !== currentCardIndex) {
@@ -109,11 +117,11 @@ export default function CylindricalCarousel({
               index={i}
               isActive={i === currentCardIndex}
               isHighlighted={i === highlightedIndex}
-              rotationAngle={i * ANGLE_PER_CARD}
-              scatterX={SCATTER_OFFSETS[i].x}
-              scatterY={SCATTER_OFFSETS[i].y}
+              rotationAngle={i * anglePerCard}
+              scatterX={getScatterOffset(i).x}
+              scatterY={getScatterOffset(i).y}
               isEntryComplete={isEntryComplete}
-              onEntryComplete={i === CARD_COUNT - 1 ? () => setIsEntryComplete(true) : undefined}
+              onEntryComplete={i === cardCount - 1 ? () => setIsEntryComplete(true) : undefined}
               onClick={() => handleCardClick(card, i)}
               onHoverChange={setIsCardHovered}
               mouseX={mouseX}
