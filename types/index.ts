@@ -47,3 +47,16 @@ export interface PortfolioState {
   isChatbotOpen: boolean
 }
 // 주의: isLayerOpen 변수 별도 생성 금지 → activeLayer !== null 인라인 사용
+
+// Admin Dashboard Stats
+export type AdminTableStat = {
+  count: number
+  lastModified: string | null  // ISO 8601 string, null = 레코드 없음
+}
+
+export type AdminStats = {
+  cards: AdminTableStat
+  career: AdminTableStat
+  projects: AdminTableStat
+  chatbotKb: AdminTableStat
+}
