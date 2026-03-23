@@ -3,13 +3,15 @@ export const runtime = 'nodejs'
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase-admin'
-import type { ProjectData } from '@/types'
+import type { ProjectDetailData } from '@/types'
 
 // Service Role 클라이언트 — RLS 우회, 서버 전용
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
+
+const PROJECT_SELECT = 'id, title, description, tech_stack, thumbnail_url, project_url, detail_description, role, period, contributions, display_order, updated_at'
 
 // DB 행 타입 (snake_case) — Route Handler 내부 전용
 type ProjectRow = {
@@ -19,11 +21,15 @@ type ProjectRow = {
   tech_stack: string[]
   thumbnail_url: string
   project_url: string
+  detail_description: string
+  role: string
+  period: string
+  contributions: string
   display_order: number
   updated_at: string | null
 }
 
-function rowToProjectData(row: ProjectRow): ProjectData {
+function rowToProjectData(row: ProjectRow): ProjectDetailData {
   return {
     id: row.id,
     title: row.title,
@@ -32,6 +38,10 @@ function rowToProjectData(row: ProjectRow): ProjectData {
     thumbnailUrl: row.thumbnail_url,
     projectUrl: row.project_url,
     displayOrder: row.display_order,
+    detailDescription: row.detail_description ?? '',
+    role: row.role ?? '',
+    period: row.period ?? '',
+    contributions: row.contributions ?? '',
   }
 }
 
@@ -49,7 +59,7 @@ export async function GET() {
 
     const { data, error } = await supabaseAdmin
       .from('projects')
-      .select('id, title, description, tech_stack, thumbnail_url, project_url, display_order, updated_at')
+      .select(PROJECT_SELECT)
       .order('display_order', { ascending: true })
 
     if (error) {
@@ -57,7 +67,7 @@ export async function GET() {
       return NextResponse.json({ error: '프로젝트 목록 조회 실패' }, { status: 500 })
     }
 
-    const projects: ProjectData[] = (data as ProjectRow[]).map(rowToProjectData)
+    const projects: ProjectDetailData[] = (data as ProjectRow[]).map(rowToProjectData)
     return NextResponse.json({ data: projects })
   } catch (err) {
     console.error('[api/admin/projects GET] 서버 오류:', (err as Error).message)
@@ -78,12 +88,16 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
-    const { title, description, techStack, thumbnailUrl, projectUrl, displayOrder } = body as {
+    const { title, description, techStack, thumbnailUrl, projectUrl, detailDescription, role, period, contributions, displayOrder } = body as {
       title: string
       description?: string
       techStack?: string[]
       thumbnailUrl?: string
       projectUrl?: string
+      detailDescription?: string
+      role?: string
+      period?: string
+      contributions?: string
       displayOrder?: number
     }
 
@@ -104,9 +118,13 @@ export async function POST(req: Request) {
         tech_stack: techStack ?? [],
         thumbnail_url: (thumbnailUrl ?? '').trim(),
         project_url: (projectUrl ?? '').trim(),
+        detail_description: (detailDescription ?? '').trim(),
+        role: (role ?? '').trim(),
+        period: (period ?? '').trim(),
+        contributions: (contributions ?? '').trim(),
         display_order: displayOrder ?? 0,
       })
-      .select('id, title, description, tech_stack, thumbnail_url, project_url, display_order, updated_at')
+      .select(PROJECT_SELECT)
       .single()
 
     if (error) {
@@ -114,7 +132,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '프로젝트 생성 실패: ' + error.message }, { status: 500 })
     }
 
-    const project: ProjectData = rowToProjectData(data as ProjectRow)
+    const project: ProjectDetailData = rowToProjectData(data as ProjectRow)
     return NextResponse.json({ data: project }, { status: 201 })
   } catch (err) {
     console.error('[api/admin/projects POST] 서버 오류:', (err as Error).message)

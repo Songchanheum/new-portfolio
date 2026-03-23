@@ -9,6 +9,9 @@ const NAV_ITEMS = [
   { href: '/admin/cards', label: 'Cards' },
   { href: '/admin/career', label: 'Career' },
   { href: '/admin/projects', label: 'Projects' },
+  { href: '/admin/skills', label: 'Skills' },
+  { href: '/admin/certifications', label: 'Certifications' },
+  { href: '/admin/activities', label: 'Activities' },
   { href: '/admin/chatbot-kb', label: 'Chatbot KB' },
 ] as const
 

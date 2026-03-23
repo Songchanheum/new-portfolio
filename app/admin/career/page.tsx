@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
-import type { CareerData } from '@/types'
+import type { CareerDetailData } from '@/types'
 
 // 토스트 상태 타입
 type ToastState = {
@@ -17,13 +17,32 @@ const EMPTY_FORM = {
   role: '',
   period: '',
   description: '',
+  detailDescription: '',
+  achievementsInput: '',
+  careerTechStackInput: '',
   displayOrder: 0,
 }
 
 type FormState = typeof EMPTY_FORM
 
+function parseAchievementLines(input: string): string[] {
+  return input.split(/\r?\n/).map((s) => s.trim()).filter(Boolean)
+}
+
+function joinAchievementLines(arr: string[]): string {
+  return arr.join('\n')
+}
+
+function parseCommaList(input: string): string[] {
+  return input.split(',').map((s) => s.trim()).filter(Boolean)
+}
+
+function joinCommaList(arr: string[]): string {
+  return arr.join(', ')
+}
+
 export default function AdminCareerPage() {
-  const [items, setItems] = useState<CareerData[]>([])
+  const [items, setItems] = useState<CareerDetailData[]>([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<ToastState>(null)
 
@@ -56,7 +75,7 @@ export default function AdminCareerPage() {
         return
       }
       const json = await res.json()
-      setItems(json.data as CareerData[])
+      setItems(json.data as CareerDetailData[])
     } catch (err) {
       showToast((err as Error).message, 'error')
     } finally {
@@ -81,7 +100,17 @@ export default function AdminCareerPage() {
       const res = await fetch('/api/admin/career', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(createForm),
+        body: JSON.stringify({
+          company: createForm.company,
+          companyUrl: createForm.companyUrl,
+          role: createForm.role,
+          period: createForm.period,
+          description: createForm.description,
+          detailDescription: createForm.detailDescription,
+          achievements: parseAchievementLines(createForm.achievementsInput),
+          careerTechStack: parseCommaList(createForm.careerTechStackInput),
+          displayOrder: createForm.displayOrder,
+        }),
       })
       const json = await res.json()
       if (!res.ok) {
@@ -89,7 +118,7 @@ export default function AdminCareerPage() {
         return
       }
       // FR35: 즉시 목록 반영 — 재조회 없이 로컬 상태에 추가
-      setItems((prev) => [...prev, json.data as CareerData])
+      setItems((prev) => [...prev, json.data as CareerDetailData])
       setCreateForm(EMPTY_FORM)
       setShowCreateForm(false)
       showToast('경력 항목이 생성되었습니다', 'success')
@@ -101,7 +130,7 @@ export default function AdminCareerPage() {
   }
 
   // 수정 모드 진입
-  function startEdit(item: CareerData) {
+  function startEdit(item: CareerDetailData) {
     setEditingId(item.id)
     setEditForm({
       company: item.company,
@@ -109,6 +138,9 @@ export default function AdminCareerPage() {
       role: item.role,
       period: item.period,
       description: item.description,
+      detailDescription: item.detailDescription,
+      achievementsInput: joinAchievementLines(item.achievements),
+      careerTechStackInput: joinCommaList(item.careerTechStack),
       displayOrder: item.displayOrder,
     })
   }
@@ -130,7 +162,17 @@ export default function AdminCareerPage() {
       const res = await fetch(`/api/admin/career/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editForm),
+        body: JSON.stringify({
+          company: editForm.company,
+          companyUrl: editForm.companyUrl,
+          role: editForm.role,
+          period: editForm.period,
+          description: editForm.description,
+          detailDescription: editForm.detailDescription,
+          achievements: parseAchievementLines(editForm.achievementsInput),
+          careerTechStack: parseCommaList(editForm.careerTechStackInput),
+          displayOrder: editForm.displayOrder,
+        }),
       })
       const json = await res.json()
       if (!res.ok) {
@@ -139,7 +181,7 @@ export default function AdminCareerPage() {
       }
       // FR35: 즉시 목록 반영 — 해당 항목만 교체
       setItems((prev) =>
-        prev.map((item) => (item.id === id ? (json.data as CareerData) : item))
+        prev.map((item) => (item.id === id ? (json.data as CareerDetailData) : item))
       )
       setEditingId(null)
       setEditForm(EMPTY_FORM)
@@ -297,6 +339,46 @@ export default function AdminCareerPage() {
               className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
             />
           </div>
+          <div className="mb-4">
+            <label className="block text-xs text-gray-500 mb-1">이력서 상세 본문</label>
+            <textarea
+              value={createForm.detailDescription}
+              onChange={(e) =>
+                setCreateForm((f) => ({ ...f, detailDescription: e.target.value }))
+              }
+              placeholder="detail_description — 이력서 페이지용 긴 설명"
+              rows={4}
+              className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-xs text-gray-500 mb-1">
+              성과 · 핵심 업무 (한 줄에 한 항목)
+            </label>
+            <textarea
+              value={createForm.achievementsInput}
+              onChange={(e) =>
+                setCreateForm((f) => ({ ...f, achievementsInput: e.target.value }))
+              }
+              placeholder={'예:\n매출 20% 증대\n신규 결제 연동'}
+              rows={4}
+              className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-xs text-gray-500 mb-1">
+              경력 기술 스택 (쉼표로 구분)
+            </label>
+            <input
+              type="text"
+              value={createForm.careerTechStackInput}
+              onChange={(e) =>
+                setCreateForm((f) => ({ ...f, careerTechStackInput: e.target.value }))
+              }
+              placeholder="Next.js, PostgreSQL, AWS"
+              className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm"
+            />
+          </div>
           <div className="flex justify-end gap-2">
             <button
               type="button"
@@ -404,6 +486,43 @@ export default function AdminCareerPage() {
                     className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
                   />
                 </div>
+                <div className="mb-4">
+                  <label className="block text-xs text-gray-500 mb-1">이력서 상세 본문</label>
+                  <textarea
+                    value={editForm.detailDescription}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, detailDescription: e.target.value }))
+                    }
+                    rows={4}
+                    className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-xs text-gray-500 mb-1">
+                    성과 · 핵심 업무 (한 줄에 한 항목)
+                  </label>
+                  <textarea
+                    value={editForm.achievementsInput}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, achievementsInput: e.target.value }))
+                    }
+                    rows={4}
+                    className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-xs text-gray-500 mb-1">
+                    경력 기술 스택 (쉼표로 구분)
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.careerTechStackInput}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, careerTechStackInput: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm"
+                  />
+                </div>
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
@@ -454,6 +573,26 @@ export default function AdminCareerPage() {
                     <p className="text-xs text-gray-500 mb-1">{item.period}</p>
                     {item.description && (
                       <p className="text-xs text-gray-600 line-clamp-2">{item.description}</p>
+                    )}
+                    {item.detailDescription && (
+                      <p className="text-xs text-gray-600 line-clamp-2 mt-1">{item.detailDescription}</p>
+                    )}
+                    {item.careerTechStack.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {item.careerTechStack.slice(0, 6).map((t) => (
+                          <span
+                            key={t}
+                            className="px-1.5 py-0.5 bg-gray-800 text-gray-400 text-[10px] rounded"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                        {item.careerTechStack.length > 6 && (
+                          <span className="text-[10px] text-gray-600">
+                            +{item.careerTechStack.length - 6}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

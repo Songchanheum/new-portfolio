@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
-import type { ProjectData } from '@/types'
+import type { ProjectDetailData } from '@/types'
 
 // 토스트 상태 타입
 type ToastState = {
@@ -15,6 +15,10 @@ type ToastState = {
 type FormState = {
   title: string
   description: string
+  detailDescription: string
+  role: string
+  period: string
+  contributions: string
   techStackInput: string  // 폼 표시용 — "Next.js, React, TypeScript"
   thumbnailUrl: string
   projectUrl: string
@@ -24,6 +28,10 @@ type FormState = {
 const EMPTY_FORM: FormState = {
   title: '',
   description: '',
+  detailDescription: '',
+  role: '',
+  period: '',
+  contributions: '',
   techStackInput: '',
   thumbnailUrl: '',
   projectUrl: '',
@@ -41,7 +49,7 @@ function joinTechStack(arr: string[]): string {
 }
 
 export default function AdminProjectsPage() {
-  const [projects, setProjects] = useState<ProjectData[]>([])
+  const [projects, setProjects] = useState<ProjectDetailData[]>([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<ToastState>(null)
 
@@ -74,7 +82,7 @@ export default function AdminProjectsPage() {
         return
       }
       const json = await res.json()
-      setProjects(json.data as ProjectData[])
+      setProjects(json.data as ProjectDetailData[])
     } catch (err) {
       showToast((err as Error).message, 'error')
     } finally {
@@ -102,6 +110,10 @@ export default function AdminProjectsPage() {
         body: JSON.stringify({
           title: createForm.title,
           description: createForm.description,
+          detailDescription: createForm.detailDescription,
+          role: createForm.role,
+          period: createForm.period,
+          contributions: createForm.contributions,
           techStack: parseTechStack(createForm.techStackInput),
           thumbnailUrl: createForm.thumbnailUrl,
           projectUrl: createForm.projectUrl,
@@ -114,7 +126,7 @@ export default function AdminProjectsPage() {
         return
       }
       // FR35: 즉시 목록 반영 — 재조회 없이 로컬 상태에 추가
-      setProjects((prev) => [...prev, json.data as ProjectData])
+      setProjects((prev) => [...prev, json.data as ProjectDetailData])
       setCreateForm(EMPTY_FORM)
       setShowCreateForm(false)
       showToast('프로젝트가 생성되었습니다', 'success')
@@ -126,11 +138,15 @@ export default function AdminProjectsPage() {
   }
 
   // 수정 모드 진입
-  function startEdit(project: ProjectData) {
+  function startEdit(project: ProjectDetailData) {
     setEditingId(project.id)
     setEditForm({
       title: project.title,
       description: project.description,
+      detailDescription: project.detailDescription,
+      role: project.role,
+      period: project.period,
+      contributions: project.contributions,
       techStackInput: joinTechStack(project.techStack),
       thumbnailUrl: project.thumbnailUrl,
       projectUrl: project.projectUrl,
@@ -158,6 +174,10 @@ export default function AdminProjectsPage() {
         body: JSON.stringify({
           title: editForm.title,
           description: editForm.description,
+          detailDescription: editForm.detailDescription,
+          role: editForm.role,
+          period: editForm.period,
+          contributions: editForm.contributions,
           techStack: parseTechStack(editForm.techStackInput),
           thumbnailUrl: editForm.thumbnailUrl,
           projectUrl: editForm.projectUrl,
@@ -171,7 +191,7 @@ export default function AdminProjectsPage() {
       }
       // FR35: 즉시 목록 반영 — 해당 프로젝트만 교체
       setProjects((prev) =>
-        prev.map((p) => (p.id === id ? (json.data as ProjectData) : p))
+        prev.map((p) => (p.id === id ? (json.data as ProjectDetailData) : p))
       )
       setEditingId(null)
       setEditForm(EMPTY_FORM)
@@ -272,6 +292,55 @@ export default function AdminProjectsPage() {
               value={createForm.description}
               onChange={(e) => setCreateForm((f) => ({ ...f, description: e.target.value }))}
               placeholder="프로젝트 설명"
+              rows={3}
+              className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 resize-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">이력서 상세 본문</label>
+            <textarea
+              value={createForm.detailDescription}
+              onChange={(e) =>
+                setCreateForm((f) => ({ ...f, detailDescription: e.target.value }))
+              }
+              placeholder="detail_description — 카드 외 이력서용 상세"
+              rows={4}
+              className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 resize-none"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">담당 역할</label>
+              <input
+                type="text"
+                value={createForm.role}
+                onChange={(e) => setCreateForm((f) => ({ ...f, role: e.target.value }))}
+                placeholder="예: 프론트엔드 리드"
+                className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">기간</label>
+              <input
+                type="text"
+                value={createForm.period}
+                onChange={(e) => setCreateForm((f) => ({ ...f, period: e.target.value }))}
+                placeholder="예: 2024.01 — 2024.06"
+                className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">기여 내용</label>
+            <textarea
+              value={createForm.contributions}
+              onChange={(e) =>
+                setCreateForm((f) => ({ ...f, contributions: e.target.value }))
+              }
+              placeholder="contributions — 기여·성과 요약"
               rows={3}
               className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 resize-none"
             />
@@ -397,6 +466,51 @@ export default function AdminProjectsPage() {
                     />
                   </div>
 
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">이력서 상세 본문</label>
+                    <textarea
+                      value={editForm.detailDescription}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, detailDescription: e.target.value }))
+                      }
+                      rows={4}
+                      className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 resize-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">담당 역할</label>
+                      <input
+                        type="text"
+                        value={editForm.role}
+                        onChange={(e) => setEditForm((f) => ({ ...f, role: e.target.value }))}
+                        className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">기간</label>
+                      <input
+                        type="text"
+                        value={editForm.period}
+                        onChange={(e) => setEditForm((f) => ({ ...f, period: e.target.value }))}
+                        className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">기여 내용</label>
+                    <textarea
+                      value={editForm.contributions}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, contributions: e.target.value }))
+                      }
+                      rows={3}
+                      className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 resize-none"
+                    />
+                  </div>
+
                   {/* tech_stack */}
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">
@@ -484,6 +598,17 @@ export default function AdminProjectsPage() {
                     </div>
                     {project.description && (
                       <p className="text-sm text-gray-400 mb-2 line-clamp-2">{project.description}</p>
+                    )}
+                    {(project.role || project.period) && (
+                      <p className="text-xs text-gray-500 mb-2">
+                        {[project.role, project.period].filter(Boolean).join(' · ')}
+                      </p>
+                    )}
+                    {project.detailDescription && (
+                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">{project.detailDescription}</p>
+                    )}
+                    {project.contributions && (
+                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">{project.contributions}</p>
                     )}
                     {project.techStack.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-2">

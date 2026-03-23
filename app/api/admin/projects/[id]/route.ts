@@ -3,13 +3,15 @@ export const runtime = 'nodejs'
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase-admin'
-import type { ProjectData } from '@/types'
+import type { ProjectDetailData } from '@/types'
 
 // Service Role 클라이언트 — RLS 우회, 서버 전용
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
+
+const PROJECT_SELECT = 'id, title, description, tech_stack, thumbnail_url, project_url, detail_description, role, period, contributions, display_order, updated_at'
 
 // DB 행 타입 (snake_case) — Route Handler 내부 전용
 type ProjectRow = {
@@ -19,11 +21,15 @@ type ProjectRow = {
   tech_stack: string[]
   thumbnail_url: string
   project_url: string
+  detail_description: string
+  role: string
+  period: string
+  contributions: string
   display_order: number
   updated_at: string | null
 }
 
-function rowToProjectData(row: ProjectRow): ProjectData {
+function rowToProjectData(row: ProjectRow): ProjectDetailData {
   return {
     id: row.id,
     title: row.title,
@@ -32,6 +38,10 @@ function rowToProjectData(row: ProjectRow): ProjectData {
     thumbnailUrl: row.thumbnail_url,
     projectUrl: row.project_url,
     displayOrder: row.display_order,
+    detailDescription: row.detail_description ?? '',
+    role: row.role ?? '',
+    period: row.period ?? '',
+    contributions: row.contributions ?? '',
   }
 }
 
@@ -52,12 +62,16 @@ export async function PATCH(req: Request, context: RouteContext) {
     }
 
     const body = await req.json()
-    const { title, description, techStack, thumbnailUrl, projectUrl, displayOrder } = body as {
+    const { title, description, techStack, thumbnailUrl, projectUrl, detailDescription, role, period, contributions, displayOrder } = body as {
       title?: string
       description?: string
       techStack?: string[]
       thumbnailUrl?: string
       projectUrl?: string
+      detailDescription?: string
+      role?: string
+      period?: string
+      contributions?: string
       displayOrder?: number
     }
 
@@ -73,6 +87,10 @@ export async function PATCH(req: Request, context: RouteContext) {
     if (techStack !== undefined) updatePayload.tech_stack = techStack
     if (thumbnailUrl !== undefined) updatePayload.thumbnail_url = thumbnailUrl.trim()
     if (projectUrl !== undefined) updatePayload.project_url = projectUrl.trim()
+    if (detailDescription !== undefined) updatePayload.detail_description = detailDescription.trim()
+    if (role !== undefined) updatePayload.role = role.trim()
+    if (period !== undefined) updatePayload.period = period.trim()
+    if (contributions !== undefined) updatePayload.contributions = contributions.trim()
     if (displayOrder !== undefined) updatePayload.display_order = displayOrder
 
     if (Object.keys(updatePayload).length === 0) {
@@ -83,7 +101,7 @@ export async function PATCH(req: Request, context: RouteContext) {
       .from('projects')
       .update(updatePayload)
       .eq('id', id)
-      .select('id, title, description, tech_stack, thumbnail_url, project_url, display_order, updated_at')
+      .select(PROJECT_SELECT)
       .single()
 
     if (error) {
@@ -91,7 +109,7 @@ export async function PATCH(req: Request, context: RouteContext) {
       return NextResponse.json({ error: '프로젝트 수정 실패: ' + error.message }, { status: 500 })
     }
 
-    const project: ProjectData = rowToProjectData(data as ProjectRow)
+    const project: ProjectDetailData = rowToProjectData(data as ProjectRow)
     return NextResponse.json({ data: project })
   } catch (err) {
     console.error('[api/admin/projects PATCH] 서버 오류:', (err as Error).message)

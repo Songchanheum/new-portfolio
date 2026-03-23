@@ -3,7 +3,7 @@ export const runtime = 'nodejs'
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase-admin'
-import type { CareerData } from '@/types'
+import type { CareerDetailData } from '@/types'
 
 // Service Role 클라이언트 — RLS 우회, 서버 전용
 const supabaseAdmin = createClient(
@@ -11,7 +11,8 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-// DB 행 타입 (snake_case) — 컴포넌트 외부 공유 불필요, Route Handler 내부 전용
+const CAREER_SELECT = 'id, company, company_url, role, period, description, detail_description, achievements, career_tech_stack, display_order, updated_at'
+
 type CareerRow = {
   id: string
   company: string
@@ -19,11 +20,14 @@ type CareerRow = {
   role: string
   period: string
   description: string
+  detail_description: string
+  achievements: string[]
+  career_tech_stack: string[]
   display_order: number
   updated_at: string | null
 }
 
-function rowToCareerData(row: CareerRow): CareerData {
+function rowToCareerData(row: CareerRow): CareerDetailData {
   return {
     id: row.id,
     company: row.company,
@@ -32,6 +36,9 @@ function rowToCareerData(row: CareerRow): CareerData {
     period: row.period,
     description: row.description,
     displayOrder: row.display_order,
+    detailDescription: row.detail_description ?? '',
+    achievements: row.achievements ?? [],
+    careerTechStack: row.career_tech_stack ?? [],
   }
 }
 
@@ -49,7 +56,7 @@ export async function GET() {
 
     const { data, error } = await supabaseAdmin
       .from('career')
-      .select('id, company, company_url, role, period, description, display_order, updated_at')
+      .select(CAREER_SELECT)
       .order('display_order', { ascending: true })
 
     if (error) {
@@ -57,7 +64,7 @@ export async function GET() {
       return NextResponse.json({ error: '경력 목록 조회 실패' }, { status: 500 })
     }
 
-    const items: CareerData[] = (data as CareerRow[]).map(rowToCareerData)
+    const items: CareerDetailData[] = (data as CareerRow[]).map(rowToCareerData)
     return NextResponse.json({ data: items })
   } catch (err) {
     console.error('[api/admin/career GET] 서버 오류:', (err as Error).message)
@@ -78,12 +85,15 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
-    const { company, companyUrl, role, period, description, displayOrder } = body as {
+    const { company, companyUrl, role, period, description, detailDescription, achievements, careerTechStack, displayOrder } = body as {
       company: string
       companyUrl?: string
       role: string
       period: string
       description?: string
+      detailDescription?: string
+      achievements?: string[]
+      careerTechStack?: string[]
       displayOrder?: number
     }
 
@@ -107,9 +117,12 @@ export async function POST(req: Request) {
         role: role.trim(),
         period: period.trim(),
         description: (description ?? '').trim(),
+        detail_description: (detailDescription ?? '').trim(),
+        achievements: achievements ?? [],
+        career_tech_stack: careerTechStack ?? [],
         display_order: displayOrder ?? 0,
       })
-      .select('id, company, company_url, role, period, description, display_order, updated_at')
+      .select(CAREER_SELECT)
       .single()
 
     if (error) {
@@ -117,7 +130,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '경력 항목 생성 실패: ' + error.message }, { status: 500 })
     }
 
-    const item: CareerData = rowToCareerData(data as CareerRow)
+    const item: CareerDetailData = rowToCareerData(data as CareerRow)
     return NextResponse.json({ data: item }, { status: 201 })
   } catch (err) {
     console.error('[api/admin/career POST] 서버 오류:', (err as Error).message)
