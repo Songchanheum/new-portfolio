@@ -168,10 +168,19 @@ export default async function ResumePage() {
             ))}
           </div>
 
-          {/* print용 섹션 목록 */}
-          <div className="print-only mt-2 text-xs text-gray-500 grid grid-cols-4 gap-4">
+          {/* 인쇄용: 화면 카드와 동일한 2열 박스 (grid 클래스가 인쇄에서 유지되도록 layout에서 print-only 강제 display 제거됨) */}
+          <div className="print-only grid grid-cols-2 gap-4 mt-2">
             {NAV_SECTIONS.map((s) => (
-              <span key={s.href}>{s.label} — {s.href}</span>
+              <div
+                key={s.href}
+                className="print-avoid-break flex items-center justify-between border border-gray-200 px-5 py-4 bg-white"
+              >
+                <div>
+                  <p className="text-base font-semibold text-gray-900">{s.label}</p>
+                  <p className="text-xs text-gray-400 tracking-wider">{s.sub}</p>
+                </div>
+                <span className="text-[#1a5c38] text-lg">→</span>
+              </div>
             ))}
           </div>
         </section>

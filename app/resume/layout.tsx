@@ -44,13 +44,25 @@ export default function ResumeLayout({ children }: { children: React.ReactNode }
             size: A4;
             margin: 15mm 20mm;
           }
+          html, body {
+            height: auto !important;
+            overflow: visible !important;
+          }
           body {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
           .no-print { display: none !important; }
-          .print-only { display: block !important; }
-          a { text-decoration: none; }
+          /* print-only: 화면에서만 숨김. 인쇄 시 display를 강제하지 않음 → grid/flex 유지 */
+          a { text-decoration: none; color: inherit; }
+          .print-avoid-break {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+          .print-section-title {
+            break-after: avoid;
+            page-break-after: avoid;
+          }
         }
 
         @media screen {
