@@ -62,3 +62,44 @@ export type AdminStats = {
   projects: AdminTableStat
   chatbotKb: AdminTableStat
 }
+
+// Resume 전용 타입
+export type SkillData = {
+  id: string
+  name: string
+  category: string   // 'frontend' | 'backend' | 'devops' | 'etc'
+  proficiency: string // 'expert' | 'advanced' | 'intermediate'
+  context: string
+  displayOrder: number
+}
+
+export type CertificationData = {
+  id: string
+  name: string
+  issuedBy: string
+  issuedAt: string | null
+  description: string
+  displayOrder: number
+}
+
+export type ActivityData = {
+  id: string
+  title: string
+  date: string | null
+  description: string
+  blogUrl: string
+  displayOrder: number
+}
+
+export type CareerDetailData = CareerData & {
+  detailDescription: string
+  achievements: string[]
+  careerTechStack: string[]
+}
+
+export type ProjectDetailData = ProjectData & {
+  detailDescription: string
+  role: string
+  period: string
+  contributions: string
+}
