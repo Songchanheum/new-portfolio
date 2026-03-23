@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -17,8 +17,8 @@ export default function AdminLoginPage() {
     setLoading(true)
 
     try {
-      // 로그인은 클라이언트 사이드에서 처리 — anon key 사용
-      const supabase = createClient(
+      // 쿠키 기반 세션을 위해 @supabase/ssr 브라우저 클라이언트 사용
+      const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       )
