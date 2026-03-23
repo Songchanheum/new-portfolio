@@ -3,7 +3,6 @@
 import { useRef, useEffect, useCallback } from 'react'
 import { useMotionValue, useSpring } from 'framer-motion'
 
-const ANGLE_PER_CARD = 72
 const DRAG_SENSITIVITY = 0.4 // px → deg
 const SCROLL_THRESHOLD = 50 // 누적 delta가 이 값을 넘으면 카드 1장 이동
 
@@ -13,6 +12,8 @@ export function useCylindricalDrag(
   cardCount: number = 5,
   isLocked: boolean = false
 ) {
+  const anglePerCard = cardCount > 0 ? 360 / cardCount : 72
+
   const totalSteps = useRef(0)
   const dragStartX = useRef(0)
   const isDragging = useRef(false)
@@ -24,7 +25,7 @@ export function useCylindricalDrag(
 
   const commitSteps = (steps: number) => {
     totalSteps.current = steps
-    rawRotation.set(-steps * ANGLE_PER_CARD)
+    rawRotation.set(-steps * anglePerCard)
     const displayIndex = ((Math.round(steps) % cardCount) + cardCount) % cardCount
     setCurrentCardIndex(displayIndex)
   }
@@ -39,14 +40,14 @@ export function useCylindricalDrag(
   const onPointerMove = (e: React.PointerEvent) => {
     if (!isDragging.current) return
     const delta = e.clientX - dragStartX.current
-    rawRotation.set(-totalSteps.current * ANGLE_PER_CARD + delta * DRAG_SENSITIVITY)
+    rawRotation.set(-totalSteps.current * anglePerCard + delta * DRAG_SENSITIVITY)
   }
 
   const onPointerUp = (e: React.PointerEvent) => {
     if (!isDragging.current) return
     isDragging.current = false
     const delta = e.clientX - dragStartX.current
-    const stepsFromDrag = (-delta * DRAG_SENSITIVITY) / ANGLE_PER_CARD
+    const stepsFromDrag = (-delta * DRAG_SENSITIVITY) / anglePerCard
     commitSteps(totalSteps.current + Math.round(stepsFromDrag))
   }
 
@@ -75,7 +76,7 @@ export function useCylindricalDrag(
     if (diff < -cardCount / 2) diff += cardCount
     const newSteps = totalSteps.current + diff
     totalSteps.current = newSteps
-    rawRotation.set(-newSteps * ANGLE_PER_CARD)
+    rawRotation.set(-newSteps * anglePerCard)
     const displayIndex = ((Math.round(newSteps) % cardCount) + cardCount) % cardCount
     setCurrentCardIndex(displayIndex)
   }, [cardCount, rawRotation, setCurrentCardIndex])

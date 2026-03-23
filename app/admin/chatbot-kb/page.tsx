@@ -246,11 +246,17 @@ export default function ChatbotKbPage() {
         </div>
       </section>
 
-      {/* 청크 목록 섹션 — Story 2.3에서 구현 */}
+      {/* 청크 목록 섹션 */}
       <section>
         <h2 className="text-lg font-semibold mb-4 text-gray-300">청크 목록</h2>
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 text-sm text-gray-500">
-          청크 목록 조회 및 검색은 Story 2.3에서 구현됩니다.
+        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+          <p className="text-sm text-gray-400 mb-4">업로드된 파일에서 생성된 청크를 조회하고 검색할 수 있습니다.</p>
+          <a
+            href="/admin/chatbot-kb/chunks"
+            className="inline-flex items-center px-4 py-2 bg-white text-gray-900 text-sm font-medium rounded hover:bg-gray-100 transition-colors"
+          >
+            청크 목록 보기 →
+          </a>
         </div>
       </section>
 

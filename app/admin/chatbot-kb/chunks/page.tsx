@@ -173,7 +173,7 @@ function ChunksPageInner() {
   // 삭제 버튼 (Story 2.4에서 완전 구현 — 현재는 placeholder)
   function handleDelete(id: string) {
     // Story 2.4에서 구현: window.confirm() + DELETE /api/admin/chatbot-kb/chunks/[id]
-    window.confirm(`청크 ${id}를 삭제하시겠습니까? (Story 2.4에서 구현됩니다)`)
+    window.confirm(`청크 ${id}를 삭제하시겠습니까?`)
   }
 
   // 수정 버튼 (Story 2.4에서 완전 구현 — 현재는 placeholder)
