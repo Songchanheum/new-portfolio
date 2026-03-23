@@ -63,6 +63,11 @@ export default function ResumeLayout({ children }: { children: React.ReactNode }
             break-after: avoid;
             page-break-after: avoid;
           }
+          /* 인쇄/PDF: 다음 섹션을 항상 새 페이지에서 시작 */
+          .print-page-start {
+            break-before: page;
+            page-break-before: always;
+          }
         }
 
         @media screen {

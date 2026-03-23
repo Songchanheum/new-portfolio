@@ -204,7 +204,7 @@ export default async function ResumePrintPage() {
         <hr className="border-gray-300 my-0" />
 
         {skills.length > 0 && (
-          <section className="py-6 border-b border-gray-300 print-avoid-break">
+          <section className="py-6 border-b border-gray-300 print-page-start">
             {sectionTitle('Skills')}
             <div className="grid grid-cols-2 gap-x-12 gap-y-5">
               {sortedCategories.map((cat) => (
@@ -226,8 +226,10 @@ export default async function ResumePrintPage() {
           </section>
         )}
 
-        {/* Index — 인쇄용 카드 레이아웃 (화면과 동일한 박스) */}
-        <section className="py-6 border-b border-gray-300">
+        {/* Index — 스킬이 없을 때만 표지 다음 페이지부터 시작 */}
+        <section
+          className={`py-6 border-b border-gray-300${skills.length === 0 ? ' print-page-start' : ''}`}
+        >
           {sectionTitle('Index')}
           <div className="grid grid-cols-2 gap-4">
             {NAV_SECTIONS.map((s) => (
@@ -246,7 +248,7 @@ export default async function ResumePrintPage() {
         </section>
 
         {/* 경력 */}
-        <section className="py-8 border-b border-gray-300">
+        <section className="py-8 border-b border-gray-300 print-page-start">
           {sectionTitle('경력 · Career')}
           <div className="space-y-8">
             {careers.map((career) => (
@@ -284,7 +286,7 @@ export default async function ResumePrintPage() {
         </section>
 
         {/* 프로젝트 */}
-        <section className="py-8 border-b border-gray-300">
+        <section className="py-8 border-b border-gray-300 print-page-start">
           {sectionTitle('프로젝트 · Projects')}
           <div className="space-y-8">
             {projects.map((project) => (
@@ -322,7 +324,7 @@ export default async function ResumePrintPage() {
         </section>
 
         {/* 자격증 */}
-        <section className="py-8 border-b border-gray-300">
+        <section className="py-8 border-b border-gray-300 print-page-start">
           {sectionTitle('자격증 · Certifications')}
           {certs.length === 0 ? (
             <p className="text-sm text-gray-400">등록된 자격증이 없습니다.</p>
@@ -349,7 +351,7 @@ export default async function ResumePrintPage() {
         </section>
 
         {/* 활동 */}
-        <section className="py-8">
+        <section className="py-8 print-page-start">
           {sectionTitle('대내외활동 · Activities')}
           {activities.length === 0 ? (
             <p className="text-sm text-gray-400">등록된 활동이 없습니다.</p>
