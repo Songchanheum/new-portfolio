@@ -14,6 +14,7 @@ const supabaseAdmin = createClient(
 type CareerRow = {
   id: string
   company: string
+  company_url: string
   role: string
   period: string
   description: string
@@ -25,6 +26,7 @@ function rowToCareerData(row: CareerRow): CareerData {
   return {
     id: row.id,
     company: row.company,
+    companyUrl: row.company_url,
     role: row.role,
     period: row.period,
     description: row.description,
@@ -49,8 +51,9 @@ export async function PATCH(req: Request, context: RouteContext) {
     }
 
     const body = await req.json()
-    const { company, role, period, description, displayOrder } = body as {
+    const { company, companyUrl, role, period, description, displayOrder } = body as {
       company?: string
+      companyUrl?: string
       role?: string
       period?: string
       description?: string
@@ -60,6 +63,7 @@ export async function PATCH(req: Request, context: RouteContext) {
     // 수정할 필드만 업데이트 (부분 업데이트 지원)
     const updatePayload: Record<string, unknown> = {}
     if (company !== undefined) updatePayload.company = company.trim()
+    if (companyUrl !== undefined) updatePayload.company_url = companyUrl.trim()
     if (role !== undefined) updatePayload.role = role.trim()
     if (period !== undefined) updatePayload.period = period.trim()
     if (description !== undefined) updatePayload.description = description.trim()
@@ -73,7 +77,7 @@ export async function PATCH(req: Request, context: RouteContext) {
       .from('career')
       .update(updatePayload)
       .eq('id', id)
-      .select('id, company, role, period, description, display_order, updated_at')
+      .select('id, company, company_url, role, period, description, display_order, updated_at')
       .single()
 
     if (error) {

@@ -17,6 +17,7 @@ type FormState = {
   description: string
   techStackInput: string  // 폼 표시용 — "Next.js, React, TypeScript"
   thumbnailUrl: string
+  projectUrl: string
   displayOrder: number
 }
 
@@ -25,6 +26,7 @@ const EMPTY_FORM: FormState = {
   description: '',
   techStackInput: '',
   thumbnailUrl: '',
+  projectUrl: '',
   displayOrder: 0,
 }
 
@@ -102,6 +104,7 @@ export default function AdminProjectsPage() {
           description: createForm.description,
           techStack: parseTechStack(createForm.techStackInput),
           thumbnailUrl: createForm.thumbnailUrl,
+          projectUrl: createForm.projectUrl,
           displayOrder: createForm.displayOrder,
         }),
       })
@@ -130,6 +133,7 @@ export default function AdminProjectsPage() {
       description: project.description,
       techStackInput: joinTechStack(project.techStack),
       thumbnailUrl: project.thumbnailUrl,
+      projectUrl: project.projectUrl,
       displayOrder: project.displayOrder,
     })
   }
@@ -156,6 +160,7 @@ export default function AdminProjectsPage() {
           description: editForm.description,
           techStack: parseTechStack(editForm.techStackInput),
           thumbnailUrl: editForm.thumbnailUrl,
+          projectUrl: editForm.projectUrl,
           displayOrder: editForm.displayOrder,
         }),
       })
@@ -299,6 +304,18 @@ export default function AdminProjectsPage() {
             />
           </div>
 
+          {/* project_url */}
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">프로젝트 URL</label>
+            <input
+              type="url"
+              value={createForm.projectUrl}
+              onChange={(e) => setCreateForm((f) => ({ ...f, projectUrl: e.target.value }))}
+              placeholder="https://example.com/project"
+              className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+            />
+          </div>
+
           {/* display_order */}
           <div>
             <label className="block text-sm text-gray-400 mb-1">표시 순서</label>
@@ -409,6 +426,20 @@ export default function AdminProjectsPage() {
                     />
                   </div>
 
+                  {/* project_url */}
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">프로젝트 URL</label>
+                    <input
+                      type="url"
+                      value={editForm.projectUrl}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, projectUrl: e.target.value }))
+                      }
+                      placeholder="https://example.com/project"
+                      className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+                    />
+                  </div>
+
                   {/* display_order */}
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">표시 순서</label>
@@ -468,6 +499,16 @@ export default function AdminProjectsPage() {
                     )}
                     {project.thumbnailUrl && (
                       <p className="text-xs text-gray-500 truncate">{project.thumbnailUrl}</p>
+                    )}
+                    {project.projectUrl && (
+                      <a
+                        href={project.projectUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-400 hover:text-blue-300 truncate block"
+                      >
+                        {project.projectUrl}
+                      </a>
                     )}
                   </div>
 

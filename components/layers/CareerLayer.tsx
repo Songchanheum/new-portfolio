@@ -60,7 +60,20 @@ export function CareerLayer({ onClose }: CareerLayerProps) {
               <div className="absolute left-0 top-1 w-3 h-3 -translate-x-[7px] rounded-full bg-white/60 border-2 border-black" />
 
               <p className="text-white/40 text-xs font-medium mb-1">{career.period}</p>
-              <h3 className="text-white text-lg font-semibold">{career.company}</h3>
+              <h3 className="text-white text-lg font-semibold">
+                {career.companyUrl ? (
+                  <a
+                    href={career.companyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white/80 underline underline-offset-2 decoration-white/30 transition-colors"
+                  >
+                    {career.company}
+                  </a>
+                ) : (
+                  career.company
+                )}
+              </h3>
               <p className="text-white/60 text-sm mb-2">{career.role}</p>
               <p className="text-white/50 text-sm leading-relaxed">{career.description}</p>
             </motion.div>

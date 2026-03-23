@@ -18,6 +18,7 @@ type ProjectRow = {
   description: string
   tech_stack: string[]
   thumbnail_url: string
+  project_url: string
   display_order: number
   updated_at: string | null
 }
@@ -29,6 +30,7 @@ function rowToProjectData(row: ProjectRow): ProjectData {
     description: row.description,
     techStack: row.tech_stack,
     thumbnailUrl: row.thumbnail_url,
+    projectUrl: row.project_url,
     displayOrder: row.display_order,
   }
 }
@@ -47,7 +49,7 @@ export async function GET() {
 
     const { data, error } = await supabaseAdmin
       .from('projects')
-      .select('id, title, description, tech_stack, thumbnail_url, display_order, updated_at')
+      .select('id, title, description, tech_stack, thumbnail_url, project_url, display_order, updated_at')
       .order('display_order', { ascending: true })
 
     if (error) {
@@ -76,11 +78,12 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
-    const { title, description, techStack, thumbnailUrl, displayOrder } = body as {
+    const { title, description, techStack, thumbnailUrl, projectUrl, displayOrder } = body as {
       title: string
       description?: string
       techStack?: string[]
       thumbnailUrl?: string
+      projectUrl?: string
       displayOrder?: number
     }
 
@@ -100,9 +103,10 @@ export async function POST(req: Request) {
         description: (description ?? '').trim(),
         tech_stack: techStack ?? [],
         thumbnail_url: (thumbnailUrl ?? '').trim(),
+        project_url: (projectUrl ?? '').trim(),
         display_order: displayOrder ?? 0,
       })
-      .select('id, title, description, tech_stack, thumbnail_url, display_order, updated_at')
+      .select('id, title, description, tech_stack, thumbnail_url, project_url, display_order, updated_at')
       .single()
 
     if (error) {

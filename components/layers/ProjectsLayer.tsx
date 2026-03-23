@@ -77,7 +77,7 @@ export function ProjectsLayer({ onClose, highlightedId }: ProjectsLayerProps) {
               <h3 className="text-white text-lg font-semibold mb-2">{project.title}</h3>
               <p className="text-white/50 text-sm leading-relaxed mb-4">{project.description}</p>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {project.techStack.map((tech) => (
                   <span
                     key={tech}
@@ -90,6 +90,17 @@ export function ProjectsLayer({ onClose, highlightedId }: ProjectsLayerProps) {
                   </span>
                 ))}
               </div>
+
+              {project.projectUrl && (
+                <a
+                  href={project.projectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-xs px-3 py-1.5 rounded-full border border-white/30 text-white/70 hover:border-white/60 hover:text-white transition-colors"
+                >
+                  프로젝트 보기 →
+                </a>
+              )}
             </motion.div>
           ))}
         </div>

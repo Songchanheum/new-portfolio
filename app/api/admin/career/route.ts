@@ -15,6 +15,7 @@ const supabaseAdmin = createClient(
 type CareerRow = {
   id: string
   company: string
+  company_url: string
   role: string
   period: string
   description: string
@@ -26,6 +27,7 @@ function rowToCareerData(row: CareerRow): CareerData {
   return {
     id: row.id,
     company: row.company,
+    companyUrl: row.company_url,
     role: row.role,
     period: row.period,
     description: row.description,
@@ -47,7 +49,7 @@ export async function GET() {
 
     const { data, error } = await supabaseAdmin
       .from('career')
-      .select('id, company, role, period, description, display_order, updated_at')
+      .select('id, company, company_url, role, period, description, display_order, updated_at')
       .order('display_order', { ascending: true })
 
     if (error) {
@@ -76,8 +78,9 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
-    const { company, role, period, description, displayOrder } = body as {
+    const { company, companyUrl, role, period, description, displayOrder } = body as {
       company: string
+      companyUrl?: string
       role: string
       period: string
       description?: string
@@ -100,12 +103,13 @@ export async function POST(req: Request) {
       .insert({
         id: newId,
         company: company.trim(),
+        company_url: (companyUrl ?? '').trim(),
         role: role.trim(),
         period: period.trim(),
         description: (description ?? '').trim(),
         display_order: displayOrder ?? 0,
       })
-      .select('id, company, role, period, description, display_order, updated_at')
+      .select('id, company, company_url, role, period, description, display_order, updated_at')
       .single()
 
     if (error) {

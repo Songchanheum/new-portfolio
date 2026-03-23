@@ -13,6 +13,7 @@ type ToastState = {
 // 생성/수정 폼 초기값
 const EMPTY_FORM = {
   company: '',
+  companyUrl: '',
   role: '',
   period: '',
   description: '',
@@ -104,6 +105,7 @@ export default function AdminCareerPage() {
     setEditingId(item.id)
     setEditForm({
       company: item.company,
+      companyUrl: item.companyUrl,
       role: item.role,
       period: item.period,
       description: item.description,
@@ -244,6 +246,18 @@ export default function AdminCareerPage() {
               />
             </div>
           </div>
+          <div className="mb-4">
+            <label className="block text-xs text-gray-500 mb-1">회사 홈페이지 URL</label>
+            <input
+              type="url"
+              value={createForm.companyUrl}
+              onChange={(e) =>
+                setCreateForm((f) => ({ ...f, companyUrl: e.target.value }))
+              }
+              placeholder="https://company.com"
+              className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm"
+            />
+          </div>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-xs text-gray-500 mb-1">기간 *</label>
@@ -341,6 +355,18 @@ export default function AdminCareerPage() {
                     />
                   </div>
                 </div>
+                <div className="mb-4">
+                  <label className="block text-xs text-gray-500 mb-1">회사 홈페이지 URL</label>
+                  <input
+                    type="url"
+                    value={editForm.companyUrl}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, companyUrl: e.target.value }))
+                    }
+                    placeholder="https://company.com"
+                    className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm"
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">기간 *</label>
@@ -407,9 +433,21 @@ export default function AdminCareerPage() {
                     <span className="text-xs text-gray-600 w-6 text-right shrink-0">
                       {item.displayOrder}
                     </span>
-                    <span className="text-sm font-semibold text-white truncate">
-                      {item.company}
-                    </span>
+                    {item.companyUrl ? (
+                      <a
+                        href={item.companyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-semibold text-blue-400 hover:text-blue-300 truncate"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {item.company} ↗
+                      </a>
+                    ) : (
+                      <span className="text-sm font-semibold text-white truncate">
+                        {item.company}
+                      </span>
+                    )}
                     <span className="text-xs text-gray-400 truncate">{item.role}</span>
                   </div>
                   <div className="pl-9">

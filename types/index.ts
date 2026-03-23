@@ -13,6 +13,7 @@ export type CardData = {
 export type CareerData = {
   id: string
   company: string
+  companyUrl: string
   role: string
   period: string
   description: string
@@ -25,6 +26,7 @@ export type ProjectData = {
   description: string
   techStack: string[]
   thumbnailUrl: string
+  projectUrl: string
   displayOrder: number
 }
 

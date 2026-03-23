@@ -18,6 +18,7 @@ type ProjectRow = {
   description: string
   tech_stack: string[]
   thumbnail_url: string
+  project_url: string
   display_order: number
   updated_at: string | null
 }
@@ -29,6 +30,7 @@ function rowToProjectData(row: ProjectRow): ProjectData {
     description: row.description,
     techStack: row.tech_stack,
     thumbnailUrl: row.thumbnail_url,
+    projectUrl: row.project_url,
     displayOrder: row.display_order,
   }
 }
@@ -50,11 +52,12 @@ export async function PATCH(req: Request, context: RouteContext) {
     }
 
     const body = await req.json()
-    const { title, description, techStack, thumbnailUrl, displayOrder } = body as {
+    const { title, description, techStack, thumbnailUrl, projectUrl, displayOrder } = body as {
       title?: string
       description?: string
       techStack?: string[]
       thumbnailUrl?: string
+      projectUrl?: string
       displayOrder?: number
     }
 
@@ -69,6 +72,7 @@ export async function PATCH(req: Request, context: RouteContext) {
     if (description !== undefined) updatePayload.description = description.trim()
     if (techStack !== undefined) updatePayload.tech_stack = techStack
     if (thumbnailUrl !== undefined) updatePayload.thumbnail_url = thumbnailUrl.trim()
+    if (projectUrl !== undefined) updatePayload.project_url = projectUrl.trim()
     if (displayOrder !== undefined) updatePayload.display_order = displayOrder
 
     if (Object.keys(updatePayload).length === 0) {
@@ -79,7 +83,7 @@ export async function PATCH(req: Request, context: RouteContext) {
       .from('projects')
       .update(updatePayload)
       .eq('id', id)
-      .select('id, title, description, tech_stack, thumbnail_url, display_order, updated_at')
+      .select('id, title, description, tech_stack, thumbnail_url, project_url, display_order, updated_at')
       .single()
 
     if (error) {
