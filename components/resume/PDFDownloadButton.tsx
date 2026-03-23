@@ -6,7 +6,9 @@ export default function PDFDownloadButton() {
     const url = `/resume/print?auto=1&y=${year}`
     const opened = window.open(url, '_blank', 'noopener,noreferrer')
     if (!opened) {
-      window.location.href = url
+      window.alert(
+        '팝업이 차단된 상태입니다. 브라우저에서 이 사이트의 팝업을 허용한 뒤 다시 눌러 주세요. (이동 없이 이 탭은 그대로 유지됩니다.)'
+      )
     }
   }
 

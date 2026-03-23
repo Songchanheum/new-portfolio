@@ -79,8 +79,14 @@ export default async function ResumePrintPage() {
         'id, title, description, tech_stack, thumbnail_url, project_url, detail_description, role, period, contributions, display_order'
       )
       .order('display_order'),
-    supabase.from('certifications').select('id, name, issued_by, issued_at, description, display_order').order('display_order'),
-    supabase.from('activities').select('id, title, date, description, blog_url, display_order').order('display_order'),
+    supabase
+      .from('certifications')
+      .select('id, name, issued_by, issued_at, description, display_order')
+      .order('display_order'),
+    supabase
+      .from('activities')
+      .select('id, title, date, description, blog_url, display_order')
+      .order('display_order'),
   ])
 
   const skills: SkillData[] =
@@ -160,7 +166,10 @@ export default async function ResumePrintPage() {
   )
 
   return (
-    <main className="min-h-screen bg-white resume-sans" style={{ fontFamily: 'var(--font-sans-resume)' }}>
+    <main
+      className="min-h-screen bg-white resume-sans"
+      style={{ fontFamily: 'var(--font-sans-resume)' }}
+    >
       <Suspense fallback={null}>
         <PrintAutoTrigger />
       </Suspense>
@@ -188,8 +197,8 @@ export default async function ResumePrintPage() {
                 웹 프론트엔드 개발자 · 수석
               </p>
               <p className="text-sm text-gray-600 leading-relaxed max-w-md">
-                AI를 협업자로 활용하며 전 영역을 넘나드는 9년차 개발자.
-                경험을 먼저 설계하고 기술로 구현합니다.
+                AI를 협업자로 활용하며 전 영역을 넘나드는 9년차 개발자. 경험을 먼저 설계하고 기술로
+                구현합니다.
               </p>
             </div>
           </div>
@@ -204,7 +213,7 @@ export default async function ResumePrintPage() {
         <hr className="border-gray-300 my-0" />
 
         {skills.length > 0 && (
-          <section className="py-6 border-b border-gray-300 print-page-start">
+          <section className="py-6 border-b border-gray-300">
             {sectionTitle('Skills')}
             <div className="grid grid-cols-2 gap-x-12 gap-y-5">
               {sortedCategories.map((cat) => (
@@ -226,27 +235,6 @@ export default async function ResumePrintPage() {
           </section>
         )}
 
-        {/* Index — 스킬이 없을 때만 표지 다음 페이지부터 시작 */}
-        <section
-          className={`py-6 border-b border-gray-300${skills.length === 0 ? ' print-page-start' : ''}`}
-        >
-          {sectionTitle('Index')}
-          <div className="grid grid-cols-2 gap-4">
-            {NAV_SECTIONS.map((s) => (
-              <div
-                key={s.id}
-                className="print-avoid-break flex items-center justify-between border border-gray-200 px-5 py-4 bg-white"
-              >
-                <div>
-                  <p className="text-base font-semibold text-gray-900">{s.label}</p>
-                  <p className="text-xs text-gray-400 tracking-wider">{s.sub}</p>
-                </div>
-                <span className="text-[#1a5c38] text-lg">→</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* 경력 */}
         <section className="py-8 border-b border-gray-300 print-page-start">
           {sectionTitle('경력 · Career')}
@@ -254,7 +242,10 @@ export default async function ResumePrintPage() {
             {careers.map((career) => (
               <article key={career.id}>
                 <header className="mb-3">
-                  <h3 className="text-xl font-black resume-serif text-gray-900" style={{ fontFamily: 'var(--font-serif)' }}>
+                  <h3
+                    className="text-xl font-black resume-serif text-gray-900"
+                    style={{ fontFamily: 'var(--font-serif)' }}
+                  >
                     {career.company}
                   </h3>
                   <p className="text-sm font-medium text-[#1a5c38] mt-0.5">{career.role}</p>
@@ -262,7 +253,9 @@ export default async function ResumePrintPage() {
                 </header>
                 <p className="text-sm text-gray-700 leading-7">{career.description}</p>
                 {career.detailDescription && (
-                  <p className="text-sm text-gray-700 leading-7 mt-3 whitespace-pre-line">{career.detailDescription}</p>
+                  <p className="text-sm text-gray-700 leading-7 mt-3 whitespace-pre-line">
+                    {career.detailDescription}
+                  </p>
                 )}
                 {career.achievements.length > 0 && (
                   <ul className="mt-3 space-y-1.5 list-disc pl-5 text-sm text-gray-700">
@@ -274,7 +267,10 @@ export default async function ResumePrintPage() {
                 {career.careerTechStack.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-3">
                     {career.careerTechStack.map((tech) => (
-                      <span key={tech} className="text-xs px-2 py-0.5 bg-[#e8f5ed] text-[#1a5c38] font-medium">
+                      <span
+                        key={tech}
+                        className="text-xs px-2 py-0.5 bg-[#e8f5ed] text-[#1a5c38] font-medium"
+                      >
                         {tech}
                       </span>
                     ))}
@@ -292,27 +288,41 @@ export default async function ResumePrintPage() {
             {projects.map((project) => (
               <article key={project.id}>
                 <header className="mb-3">
-                  <h3 className="text-xl font-black resume-serif text-gray-900" style={{ fontFamily: 'var(--font-serif)' }}>
+                  <h3
+                    className="text-xl font-black resume-serif text-gray-900"
+                    style={{ fontFamily: 'var(--font-serif)' }}
+                  >
                     {project.title}
                   </h3>
                   <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 mt-1">
-                    {project.role && <span className="font-medium text-[#1a5c38]">{project.role}</span>}
+                    {project.role && (
+                      <span className="font-medium text-[#1a5c38]">{project.role}</span>
+                    )}
                     {project.role && project.period && <span className="text-gray-300">|</span>}
                     {project.period && <span>{project.period}</span>}
                   </div>
-                  {project.projectUrl && <p className="text-xs text-gray-400 mt-1 break-all">{project.projectUrl}</p>}
+                  {project.projectUrl && (
+                    <p className="text-xs text-gray-400 mt-1 break-all">{project.projectUrl}</p>
+                  )}
                 </header>
                 <p className="text-sm text-gray-700 leading-7">{project.description}</p>
                 {project.detailDescription && (
-                  <p className="text-sm text-gray-700 leading-7 mt-3 whitespace-pre-line">{project.detailDescription}</p>
+                  <p className="text-sm text-gray-700 leading-7 mt-3 whitespace-pre-line">
+                    {project.detailDescription}
+                  </p>
                 )}
                 {project.contributions && (
-                  <p className="text-sm text-gray-700 leading-7 mt-3 whitespace-pre-line">{project.contributions}</p>
+                  <p className="text-sm text-gray-700 leading-7 mt-3 whitespace-pre-line">
+                    {project.contributions}
+                  </p>
                 )}
                 {project.techStack.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-3">
                     {project.techStack.map((tech) => (
-                      <span key={tech} className="text-xs px-2 py-0.5 bg-[#e8f5ed] text-[#1a5c38] font-medium">
+                      <span
+                        key={tech}
+                        className="text-xs px-2 py-0.5 bg-[#e8f5ed] text-[#1a5c38] font-medium"
+                      >
                         {tech}
                       </span>
                     ))}
@@ -331,17 +341,29 @@ export default async function ResumePrintPage() {
           ) : (
             <div className="space-y-0">
               {certs.map((cert, idx) => (
-                <div key={cert.id} className={`py-4 ${idx < certs.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                <div
+                  key={cert.id}
+                  className={`py-4 ${idx < certs.length - 1 ? 'border-b border-gray-100' : ''}`}
+                >
                   <div className="flex gap-6 items-start">
                     <div className="w-24 shrink-0">
                       <p className="text-xs text-gray-400">{formatYm(cert.issuedAt)}</p>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-bold text-gray-900 resume-serif" style={{ fontFamily: 'var(--font-serif)' }}>
+                      <h3
+                        className="text-base font-bold text-gray-900 resume-serif"
+                        style={{ fontFamily: 'var(--font-serif)' }}
+                      >
                         {cert.name}
                       </h3>
-                      {cert.issuedBy && <p className="text-xs font-medium text-[#1a5c38] mt-0.5">{cert.issuedBy}</p>}
-                      {cert.description && <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">{cert.description}</p>}
+                      {cert.issuedBy && (
+                        <p className="text-xs font-medium text-[#1a5c38] mt-0.5">{cert.issuedBy}</p>
+                      )}
+                      {cert.description && (
+                        <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">
+                          {cert.description}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -351,7 +373,7 @@ export default async function ResumePrintPage() {
         </section>
 
         {/* 활동 */}
-        <section className="py-8 print-page-start">
+        <section className="py-8">
           {sectionTitle('대내외활동 · Activities')}
           {activities.length === 0 ? (
             <p className="text-sm text-gray-400">등록된 활동이 없습니다.</p>
@@ -367,13 +389,20 @@ export default async function ResumePrintPage() {
                       <p className="text-xs text-gray-400">{formatYm(activity.date)}</p>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-bold text-gray-900 resume-serif" style={{ fontFamily: 'var(--font-serif)' }}>
+                      <h3
+                        className="text-base font-bold text-gray-900 resume-serif"
+                        style={{ fontFamily: 'var(--font-serif)' }}
+                      >
                         {activity.title}
                       </h3>
                       {activity.description && (
-                        <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">{activity.description}</p>
+                        <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">
+                          {activity.description}
+                        </p>
                       )}
-                      {activity.blogUrl && <p className="text-xs text-gray-400 mt-1 break-all">{activity.blogUrl}</p>}
+                      {activity.blogUrl && (
+                        <p className="text-xs text-gray-400 mt-1 break-all">{activity.blogUrl}</p>
+                      )}
                     </div>
                   </div>
                 </div>
