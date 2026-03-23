@@ -12,6 +12,7 @@ const HARDCODED_PROJECTS: ProjectData[] = [
     description: '이 사이트 자체가 프로젝트입니다. CSS 3D 캐러셀, 커서 반응 조명, AI 챗봇까지 — 경험을 먼저 설계하고 기술을 입힌 인터랙티브 포트폴리오.',
     techStack: ['Next.js', 'Framer Motion', 'Supabase', 'Gemini'],
     thumbnailUrl: '',
+    projectUrl: '',
     displayOrder: 0,
   },
   {
@@ -20,6 +21,7 @@ const HARDCODED_PROJECTS: ProjectData[] = [
     description: 'PR이 올라오면 자동으로 코드를 분석하고 리뷰 코멘트를 남기는 GitHub Action. 컨텍스트를 이해하는 리뷰를 목표로 설계.',
     techStack: ['TypeScript', 'GitHub Actions', 'Claude API'],
     thumbnailUrl: '',
+    projectUrl: '',
     displayOrder: 1,
   },
   {
@@ -28,6 +30,7 @@ const HARDCODED_PROJECTS: ProjectData[] = [
     description: 'WebSocket 기반의 실시간 마크다운 협업 에디터. CRDT 알고리즘으로 충돌 없는 동시 편집을 구현.',
     techStack: ['React', 'WebSocket', 'Y.js', 'Node.js'],
     thumbnailUrl: '',
+    projectUrl: '',
     displayOrder: 2,
   },
   {
@@ -36,6 +39,7 @@ const HARDCODED_PROJECTS: ProjectData[] = [
     description: '읽은 글, 메모, 아이디어를 벡터 임베딩으로 연결하는 PKM 도구. 관련 노트를 자동으로 추천.',
     techStack: ['Next.js', 'Supabase', 'pgvector', 'OpenAI'],
     thumbnailUrl: '',
+    projectUrl: '',
     displayOrder: 3,
   },
 ]
@@ -50,7 +54,7 @@ export function useProjectsData(): UseDataResult<ProjectData> {
       try {
         const { data: rows, error: err } = await supabase
           .from('projects')
-          .select('id, title, description, tech_stack, thumbnail_url, display_order')
+          .select('id, title, description, tech_stack, thumbnail_url, project_url, display_order')
           .order('display_order')
 
         if (err) throw err
@@ -62,6 +66,7 @@ export function useProjectsData(): UseDataResult<ProjectData> {
               description: r.description,
               techStack: r.tech_stack ?? [],
               thumbnailUrl: r.thumbnail_url ?? '',
+              projectUrl: r.project_url ?? '',
               displayOrder: r.display_order,
             }))
           )
