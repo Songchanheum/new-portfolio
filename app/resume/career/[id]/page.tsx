@@ -110,7 +110,7 @@ export default async function CareerDetailPage({ params }: { params: Promise<{ i
             </h2>
             <WysiwygRenderer
               html={sanitizeHtml(career.detailDescription)}
-              className="prose prose-sm max-w-none text-gray-700"
+              className="prose prose-sm max-w-none text-gray-700 [&_li_p]:my-0"
             />
           </section>
         )}

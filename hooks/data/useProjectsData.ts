@@ -45,6 +45,36 @@ const HARDCODED_PROJECTS: ProjectData[] = [
     projectUrl: '',
     displayOrder: 3,
   },
+  {
+    id: 'proj-4',
+    title: 'AI IDE Prototype',
+    description:
+      'Google Gemini API로 구동되는 AI 코드 에디터 프로토타입. 로컬 파일 시스템 접근, Monaco 에디터, 코드 변경 Diff 뷰어를 갖춘 AI 채팅 기반 IDE입니다.',
+    techStack: ['Next.js', 'TypeScript', 'Monaco Editor', 'Gemini API', 'React 19'],
+    thumbnailUrl: '',
+    projectUrl: '',
+    displayOrder: 4,
+  },
+  {
+    id: 'proj-5',
+    title: 'AI Agent Coder',
+    description:
+      '자연어로 AI 에이전트를 설계·생성하고, ADK 오케스트레이션과 Vercel Sandbox 위에서 즉석 테스트할 수 있는 에이전트 빌더 앱. 멀티턴 챗봇으로 만든 에이전트와 바로 대화할 수 있습니다.',
+    techStack: ['Next.js', 'TypeScript', 'Gemini API', 'Agent Development Kit', 'Vercel Sandbox', 'Tailwind CSS'],
+    thumbnailUrl: '',
+    projectUrl: '',
+    displayOrder: 5,
+  },
+  {
+    id: 'proj-6',
+    title: 'TRIGGER — 카카오톡 총기 강화 게임',
+    description:
+      '카카오톡 챗봇으로 즐기는 텍스트 기반 총기 강화 RPG. 5개 분류 25종 총기를 +20까지 강화하고, PvP 배틀·랭킹·출석 보상을 갖춘 Python Flask 서버리스 게임입니다.',
+    techStack: ['Python', 'Flask', 'Redis', 'Vercel', 'Kakao Chatbot API'],
+    thumbnailUrl: '',
+    projectUrl: '',
+    displayOrder: 6,
+  },
 ]
 
 export function useProjectsData(): UseDataResult<ProjectData> {

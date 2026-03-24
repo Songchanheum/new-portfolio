@@ -26,7 +26,7 @@ export function ProjectsLayer({ onClose, highlightedId }: ProjectsLayerProps) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -34,14 +34,14 @@ export function ProjectsLayer({ onClose, highlightedId }: ProjectsLayerProps) {
       onClick={onClose}
     >
       <motion.div
-        className="relative w-full max-w-4xl mx-4 my-8 p-8"
+        className="relative w-full max-w-4xl mx-4 my-8 flex flex-col max-h-[90vh] rounded-2xl bg-black/60"
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 40, opacity: 0 }}
         transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center justify-between px-8 pt-8 pb-6 shrink-0">
           <h2 className="text-white text-2xl font-bold">사이드 프로젝트</h2>
           <button
             className="text-white/50 hover:text-white transition-colors text-2xl leading-none"
@@ -52,6 +52,7 @@ export function ProjectsLayer({ onClose, highlightedId }: ProjectsLayerProps) {
           </button>
         </div>
 
+        <div className="overflow-y-auto scrollbar-glass px-8 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {projects.map((project, i) => (
             <motion.div
@@ -105,6 +106,7 @@ export function ProjectsLayer({ onClose, highlightedId }: ProjectsLayerProps) {
               )}
             </motion.div>
           ))}
+        </div>
         </div>
       </motion.div>
     </motion.div>

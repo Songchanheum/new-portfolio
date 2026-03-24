@@ -1,6 +1,13 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@media print {
+  .prose li p {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
 /* 카드 모달 등 다크 UI — 기본 흰 스크롤바 완화 */
 @layer utilities {
   .scrollbar-glass {

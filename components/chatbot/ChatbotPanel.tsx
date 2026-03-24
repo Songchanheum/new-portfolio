@@ -16,6 +16,14 @@ interface ChatbotPanelProps {
 
 const TOOLS_PREFIX = '__TOOLS__:'
 
+const SUGGESTED_QUESTIONS = [
+  '어떤 개발자인지 소개해줘',
+  '주로 사용하는 기술 스택이 뭐예요?',
+  '최근에 한 프로젝트 뭐예요?',
+  '협업 방식이 어떻게 돼요?',
+  '연락은 어떻게 하나요?',
+]
+
 export function ChatbotPanel({ isOpen, onClose, cardCount = 5 }: ChatbotPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -29,8 +37,8 @@ export function ChatbotPanel({ isOpen, onClose, cardCount = 5 }: ChatbotPanelPro
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages])
 
-  const handleSend = async () => {
-    const trimmed = input.trim()
+  const handleSend = async (text?: string) => {
+    const trimmed = (text ?? input).trim()
     if (!trimmed || isWaiting) return
 
     const userMsg: ChatMessage = {
@@ -158,9 +166,20 @@ export function ChatbotPanel({ isOpen, onClose, cardCount = 5 }: ChatbotPanelPro
             {/* 메시지 목록 */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
               {messages.length === 0 && (
-                <p className="text-white/30 text-sm text-center mt-8">
-                  궁금한 점을 물어보세요
-                </p>
+                <div className="mt-8 flex flex-col items-center gap-4">
+                  <p className="text-white/30 text-sm text-center">궁금한 점을 물어보세요</p>
+                  <div className="flex flex-col gap-2 w-full">
+                    {SUGGESTED_QUESTIONS.map((q) => (
+                      <button
+                        key={q}
+                        onClick={() => handleSend(q)}
+                        className="w-full text-left text-sm px-4 py-2.5 rounded-lg border border-white/10 text-white/50 hover:border-white/25 hover:text-white/80 transition-colors bg-white/3"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
 
               {messages.map((msg) => (
@@ -197,7 +216,7 @@ export function ChatbotPanel({ isOpen, onClose, cardCount = 5 }: ChatbotPanelPro
                   disabled={isWaiting}
                 />
                 <button
-                  onClick={handleSend}
+                  onClick={() => handleSend()}
                   disabled={isWaiting || !input.trim()}
                   className={cn(
                     'px-4 py-2.5 rounded-lg text-sm font-medium transition-colors',

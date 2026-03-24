@@ -121,7 +121,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             </h2>
             <WysiwygRenderer
               html={sanitizeHtml(project.detailDescription)}
-              className="prose prose-sm max-w-none text-gray-700"
+              className="prose prose-sm max-w-none text-gray-700 [&_li_p]:my-0"
             />
           </section>
         )}
