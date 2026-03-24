@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createSupabaseServerClient } from '@/lib/supabase-admin'
+import { sanitizeHtml } from '@/lib/wysiwyg'
+import { WysiwygRenderer } from '@/components/wysiwyg/WysiwygRenderer'
 import type { CareerDetailData } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -106,7 +108,10 @@ export default async function CareerDetailPage({ params }: { params: Promise<{ i
             <h2 className="text-xs font-bold tracking-[0.2em] text-[#1a5c38] uppercase mb-3 resume-serif" style={{ fontFamily: 'var(--font-serif)' }}>
               담당 업무
             </h2>
-            <p className="text-sm text-gray-700 leading-7 whitespace-pre-line">{career.detailDescription}</p>
+            <WysiwygRenderer
+              html={sanitizeHtml(career.detailDescription)}
+              className="prose prose-sm max-w-none text-gray-700"
+            />
           </section>
         )}
 
@@ -116,11 +121,14 @@ export default async function CareerDetailPage({ params }: { params: Promise<{ i
             <h2 className="text-xs font-bold tracking-[0.2em] text-[#1a5c38] uppercase mb-3 resume-serif" style={{ fontFamily: 'var(--font-serif)' }}>
               주요 성과
             </h2>
-            <ul className="space-y-2">
+            <ul className="space-y-2 list-none pl-0">
               {career.achievements.map((item, i) => (
                 <li key={i} className="flex gap-3 text-sm text-gray-700">
                   <span className="text-[#1a5c38] font-bold shrink-0">·</span>
-                  <span className="leading-6">{item}</span>
+                  <WysiwygRenderer
+                    html={sanitizeHtml(item)}
+                    className="prose prose-sm max-w-none flex-1 text-gray-700 [&_p]:my-1 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0"
+                  />
                 </li>
               ))}
             </ul>

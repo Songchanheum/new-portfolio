@@ -21,7 +21,7 @@ export default function Home() {
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
   const { currentCardIndex, setCurrentCardIndex, activeLayer, setActiveLayer, isChatbotOpen, toggleChatbot } = usePortfolioState()
-  const { data: cards } = useCardsData()
+  const { data: cards, loading: cardsLoading, error: cardsError } = useCardsData()
   const [highlightedProjectId, setHighlightedProjectId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -41,21 +41,38 @@ export default function Home() {
 
   return (
     <main
-      className="min-h-screen bg-black flex items-center justify-center overflow-hidden"
+      className="min-h-screen flex items-center justify-center overflow-hidden"
+      style={{
+        background: 'radial-gradient(ellipse at 30% 20%, #0f0f1a 0%, #07070d 50%, #000000 100%)',
+      }}
       onMouseMove={(e) => {
         mouseX.set(e.clientX)
         mouseY.set(e.clientY)
       }}
     >
       <GlobalLighting mouseX={mouseX} mouseY={mouseY} />
-      <CylindricalCarousel
-        cards={cards}
-        currentCardIndex={currentCardIndex}
-        setCurrentCardIndex={setCurrentCardIndex}
-        mouseX={mouseX}
-        mouseY={mouseY}
-        onOpenLayer={setActiveLayer}
-      />
+      {cardsLoading ? (
+        <p className="text-white/45 text-sm tracking-wide" role="status">
+          카드를 불러오는 중…
+        </p>
+      ) : cards.length === 0 ? (
+        <div className="text-center text-white/50 text-sm max-w-sm px-6 space-y-2" role="status">
+          <p>표시할 카드가 없습니다.</p>
+          {cardsError ? (
+            <p className="text-white/35 text-xs break-words">{cardsError}</p>
+          ) : null}
+        </div>
+      ) : (
+        <CylindricalCarousel
+          cards={cards}
+          currentCardIndex={currentCardIndex}
+          setCurrentCardIndex={setCurrentCardIndex}
+          mouseX={mouseX}
+          mouseY={mouseY}
+          onOpenLayer={setActiveLayer}
+          isLocked={activeLayer !== null}
+        />
+      )}
 
       <AnimatePresence>
         {activeLayer === 'career' && (

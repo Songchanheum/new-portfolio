@@ -103,3 +103,5 @@ export type ProjectDetailData = ProjectData & {
   period: string
   contributions: string
 }
+
+export type ImageUploadResponse = { url: string }

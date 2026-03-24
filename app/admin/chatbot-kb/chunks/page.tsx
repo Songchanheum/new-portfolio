@@ -61,6 +61,21 @@ function ChunksPageInner() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // 인라인 편집 상태
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingContent, setEditingContent] = useState('')
+  const [editSaving, setEditSaving] = useState(false)
+
+  // 삭제 진행 중인 id 집합
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set())
+
+  // 체크박스 선택 상태
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkDeleting, setBulkDeleting] = useState(false)
+
+  const allSelected = chunks.length > 0 && chunks.every(c => selectedIds.has(c.id))
+  const someSelected = selectedIds.size > 0
+
   // 소스파일 드롭다운 옵션 — 목록에서 unique 값 추출
   const [sourceFileOptions, setSourceFileOptions] = useState<string[]>([])
 
@@ -120,6 +135,7 @@ function ChunksPageInner() {
       const json: ChunksApiResponse = await res.json()
       setChunks(json.data)
       setTotal(json.total)
+      setSelectedIds(new Set()) // 페이지 변경·검색 시 선택 초기화
 
       // source_file 드롭다운 옵션 갱신 — 현재 페이지 결과에서 unique 추출
       // (전체 목록에서 파일 목록을 별도 API로 조회하는 방식은 Story 2.5에서 필요 시 추가)
@@ -170,16 +186,93 @@ function ChunksPageInner() {
     updateUrl({ page: next })
   }
 
-  // 삭제 버튼 (Story 2.4에서 완전 구현 — 현재는 placeholder)
-  function handleDelete(id: string) {
-    // Story 2.4에서 구현: window.confirm() + DELETE /api/admin/chatbot-kb/chunks/[id]
-    window.confirm(`청크 ${id}를 삭제하시겠습니까?`)
+  // 체크박스 토글
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => {
+      const s = new Set(prev)
+      s.has(id) ? s.delete(id) : s.add(id)
+      return s
+    })
   }
 
-  // 수정 버튼 (Story 2.4에서 완전 구현 — 현재는 placeholder)
-  function handleEdit(id: string) {
-    // Story 2.4에서 구현: 인라인 편집 모드 진입
-    console.log('[ChunksPage] 수정 진입 예정 (Story 2.4):', id)
+  function toggleSelectAll() {
+    if (allSelected) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(chunks.map(c => c.id)))
+    }
+  }
+
+  // 일괄 삭제
+  async function handleBulkDelete() {
+    if (selectedIds.size === 0) return
+    if (!window.confirm(`선택한 ${selectedIds.size}개 청크를 삭제하시겠습니까?`)) return
+    setBulkDeleting(true)
+    const ids = Array.from(selectedIds)
+    await Promise.all(
+      ids.map(id =>
+        fetch(`/api/admin/chatbot-kb/chunks/${id}`, { method: 'DELETE' }).catch(() => null)
+      )
+    )
+    setChunks(prev => prev.filter(c => !selectedIds.has(c.id)))
+    setTotal(prev => prev - ids.length)
+    setSelectedIds(new Set())
+    setBulkDeleting(false)
+  }
+
+  // 삭제
+  async function handleDelete(id: string) {
+    if (!window.confirm('이 청크를 삭제하시겠습니까?')) return
+    setDeletingIds(prev => new Set(prev).add(id))
+    try {
+      const res = await fetch(`/api/admin/chatbot-kb/chunks/${id}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({ error: '삭제 실패' }))
+        throw new Error(body.error ?? `HTTP ${res.status}`)
+      }
+      setChunks(prev => prev.filter(c => c.id !== id))
+      setTotal(prev => prev - 1)
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setDeletingIds(prev => { const s = new Set(prev); s.delete(id); return s })
+    }
+  }
+
+  // 수정 모드 진입
+  function handleEdit(id: string, content: string) {
+    setEditingId(id)
+    setEditingContent(content)
+  }
+
+  // 수정 저장
+  async function handleEditSave(id: string) {
+    if (editingContent.trim() === '') return
+    setEditSaving(true)
+    try {
+      const res = await fetch(`/api/admin/chatbot-kb/chunks/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: editingContent.trim() }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({ error: '수정 실패' }))
+        throw new Error(body.error ?? `HTTP ${res.status}`)
+      }
+      const json = await res.json()
+      const updated = json.data as ChunkRow
+      setChunks(prev => prev.map(c => c.id === id ? { ...c, ...updated } : c))
+      setEditingId(null)
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setEditSaving(false)
+    }
+  }
+
+  function handleEditCancel() {
+    setEditingId(null)
+    setEditingContent('')
   }
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
@@ -196,11 +289,22 @@ function ChunksPageInner() {
           ← Chatbot KB
         </Link>
         <h1 className="text-2xl font-bold">청크 목록</h1>
-        {total > 0 && (
-          <span className="text-sm text-gray-400 ml-auto">
-            총 {total.toLocaleString()}개
-          </span>
-        )}
+        <div className="ml-auto flex items-center gap-3">
+          {someSelected && (
+            <button
+              onClick={handleBulkDelete}
+              disabled={bulkDeleting}
+              className="px-3 py-1.5 text-sm bg-red-700 hover:bg-red-600 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {bulkDeleting ? '삭제 중...' : `선택 삭제 (${selectedIds.size})`}
+            </button>
+          )}
+          {total > 0 && (
+            <span className="text-sm text-gray-400">
+              총 {total.toLocaleString()}개
+            </span>
+          )}
+        </div>
       </div>
 
       {/* 검색/필터 영역 */}
@@ -303,13 +407,12 @@ function ChunksPageInner() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-900 border-b border-gray-800">
-                  {/* 체크박스 컬럼 — Story 2.5에서 활성화 */}
                   <th className="w-10 px-3 py-3 text-left">
                     <input
                       type="checkbox"
-                      disabled
-                      title="Story 2.5에서 활성화됩니다"
-                      className="opacity-30 cursor-not-allowed"
+                      checked={allSelected}
+                      onChange={toggleSelectAll}
+                      className="cursor-pointer accent-white"
                     />
                   </th>
                   <th className="px-4 py-3 text-left text-gray-400 font-medium">내용 미리보기</th>
@@ -329,22 +432,31 @@ function ChunksPageInner() {
                       chunk.status === 'failed' && 'bg-red-950/20'
                     )}
                   >
-                    {/* 체크박스 — Story 2.5에서 활성화 */}
                     <td className="px-3 py-3">
                       <input
                         type="checkbox"
-                        disabled
-                        title="Story 2.5에서 활성화됩니다"
-                        className="opacity-30 cursor-not-allowed"
+                        checked={selectedIds.has(chunk.id)}
+                        onChange={() => toggleSelect(chunk.id)}
+                        className="cursor-pointer accent-white"
                       />
                     </td>
 
-                    {/* content 미리보기 (최대 200자) */}
+                    {/* content 미리보기 or 인라인 편집 */}
                     <td className="px-4 py-3 text-gray-200">
-                      <p className="line-clamp-2 leading-relaxed">
-                        {chunk.content}
-                      </p>
-                      <p className="text-xs text-gray-600 mt-1 font-mono">id: {chunk.id}</p>
+                      {editingId === chunk.id ? (
+                        <textarea
+                          value={editingContent}
+                          onChange={(e) => setEditingContent(e.target.value)}
+                          disabled={editSaving}
+                          rows={4}
+                          className="w-full px-2 py-1.5 bg-gray-800 text-white text-sm rounded border border-gray-600 focus:outline-none focus:border-gray-400 resize-y disabled:opacity-50"
+                        />
+                      ) : (
+                        <>
+                          <p className="line-clamp-2 leading-relaxed">{chunk.content}</p>
+                          <p className="text-xs text-gray-600 mt-1 font-mono">id: {chunk.id}</p>
+                        </>
+                      )}
                     </td>
 
                     {/* status badge (AC5) */}
@@ -381,24 +493,43 @@ function ChunksPageInner() {
                       })}
                     </td>
 
-                    {/* 액션 버튼 (Story 2.4에서 완전 구현) */}
+                    {/* 액션 버튼 */}
                     <td className="px-4 py-3">
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => handleEdit(chunk.id)}
-                          className="px-2 py-1 text-xs text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
-                          title="Story 2.4에서 구현됩니다"
-                        >
-                          수정
-                        </button>
-                        <button
-                          onClick={() => handleDelete(chunk.id)}
-                          className="px-2 py-1 text-xs text-gray-400 hover:text-red-300 hover:bg-red-900/30 rounded transition-colors"
-                          title="Story 2.4에서 구현됩니다"
-                        >
-                          삭제
-                        </button>
-                      </div>
+                      {editingId === chunk.id ? (
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleEditSave(chunk.id)}
+                            disabled={editSaving || editingContent.trim() === ''}
+                            className="px-2 py-1 text-xs text-white bg-blue-700 hover:bg-blue-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {editSaving ? '저장 중...' : '저장'}
+                          </button>
+                          <button
+                            onClick={handleEditCancel}
+                            disabled={editSaving}
+                            className="px-2 py-1 text-xs text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                          >
+                            취소
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleEdit(chunk.id, chunk.content)}
+                            disabled={deletingIds.has(chunk.id)}
+                            className="px-2 py-1 text-xs text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors disabled:opacity-40"
+                          >
+                            수정
+                          </button>
+                          <button
+                            onClick={() => handleDelete(chunk.id)}
+                            disabled={deletingIds.has(chunk.id)}
+                            className="px-2 py-1 text-xs text-gray-400 hover:text-red-300 hover:bg-red-900/30 rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                          >
+                            {deletingIds.has(chunk.id) ? '삭제 중...' : '삭제'}
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

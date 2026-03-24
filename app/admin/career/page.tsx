@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
+import TiptapEditor from '@/components/wysiwyg/TiptapEditor'
 import type { CareerDetailData } from '@/types'
 
 // 토스트 상태 타입
@@ -341,14 +342,9 @@ export default function AdminCareerPage() {
           </div>
           <div className="mb-4">
             <label className="block text-xs text-gray-500 mb-1">이력서 상세 본문</label>
-            <textarea
-              value={createForm.detailDescription}
-              onChange={(e) =>
-                setCreateForm((f) => ({ ...f, detailDescription: e.target.value }))
-              }
-              placeholder="detail_description — 이력서 페이지용 긴 설명"
-              rows={4}
-              className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
+            <TiptapEditor
+              content={createForm.detailDescription}
+              onChange={(html) => setCreateForm((f) => ({ ...f, detailDescription: html }))}
             />
           </div>
           <div className="mb-4">
@@ -488,13 +484,9 @@ export default function AdminCareerPage() {
                 </div>
                 <div className="mb-4">
                   <label className="block text-xs text-gray-500 mb-1">이력서 상세 본문</label>
-                  <textarea
-                    value={editForm.detailDescription}
-                    onChange={(e) =>
-                      setEditForm((f) => ({ ...f, detailDescription: e.target.value }))
-                    }
-                    rows={4}
-                    className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
+                  <TiptapEditor
+                    content={editForm.detailDescription}
+                    onChange={(html) => setEditForm((f) => ({ ...f, detailDescription: html }))}
                   />
                 </div>
                 <div className="mb-4">

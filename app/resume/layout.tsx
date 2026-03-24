@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: '송찬흠 — Frontend Developer',
-    description: '9년차 웹 프론트엔드 개발자. Next.js · React · TypeScript · Supabase',
+    description: '10년차 웹 프론트엔드 개발자. Next.js · React · TypeScript · Supabase',
     type: 'profile',
   },
 }
@@ -67,6 +67,21 @@ export default function ResumeLayout({ children }: { children: React.ReactNode }
           .print-page-start {
             break-before: page;
             page-break-before: always;
+          }
+          /*
+           * PDF: 부모에 break-inside:avoid 를 주면 masthead+skills 전체가 한 조각이 되어,
+           * 한 페이지에 안 들어갈 때 Skills 블록 전체가 다음 페이지로 밀리는 경우가 많음.
+           * 대신 헤더 직후·Skills 직전 페이지 나눔만 억제하고, Skills 본문은 필요 시 페이지 나눔 허용.
+           */
+          .print-masthead-skills-block > header {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            break-after: avoid;
+            page-break-after: avoid;
+          }
+          .print-masthead-skills-block > section {
+            break-before: avoid;
+            page-break-before: avoid;
           }
         }
 

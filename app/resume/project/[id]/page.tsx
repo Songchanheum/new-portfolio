@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createSupabaseServerClient } from '@/lib/supabase-admin'
+import { sanitizeHtml } from '@/lib/wysiwyg'
+import { WysiwygRenderer } from '@/components/wysiwyg/WysiwygRenderer'
 import type { ProjectDetailData } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -117,7 +119,10 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             <h2 className="text-xs font-bold tracking-[0.2em] text-[#1a5c38] uppercase mb-3 resume-serif" style={{ fontFamily: 'var(--font-serif)' }}>
               상세 내용
             </h2>
-            <p className="text-sm text-gray-700 leading-7 whitespace-pre-line">{project.detailDescription}</p>
+            <WysiwygRenderer
+              html={sanitizeHtml(project.detailDescription)}
+              className="prose prose-sm max-w-none text-gray-700"
+            />
           </section>
         )}
 

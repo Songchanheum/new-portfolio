@@ -43,7 +43,57 @@ INSERT INTO cards (id, type, keyword, detail, display_order) VALUES
   ('card-1', 'developer', '기술이 인간에게 어떻게 느껴져야 하는가를 설계합니다', '좋은 기술은 사용자가 의식하지 못할 때 완성됩니다. 인터페이스의 무게, 반응의 속도, 전환의 리듬 — 눈에 보이지 않는 디테일이 경험을 결정합니다.', 1),
   ('card-2', 'career', '디자이너 없이도 방향을 잡고, 기획자 없이도 결정을 내렸던 순간들', '클릭하면 경력 타임라인을 볼 수 있습니다. 스타트업부터 엔터프라이즈까지, 기획·디자인·개발을 넘나들며 빈자리를 채워온 여정입니다.', 2),
   ('card-3', 'projects', 'AI와 함께 만든 것들 — 코드보다 경험을 먼저 설계했습니다', '클릭하면 사이드 프로젝트들을 탐험할 수 있습니다. AI와 함께 아이디어를 프로토타이핑하고, 경험부터 역순으로 설계한 프로젝트들입니다.', 3),
-  ('card-4', 'topic', 'AI는 도구가 아니라 협업자다 — 그걸 어떻게 느끼게 할 것인가', 'AI가 명령을 수행하는 도구에 머무는 한, 진짜 가치는 드러나지 않습니다. AI와 함께 사고하고, 함께 만들고, 그 과정 자체를 사용자에게 체감시키는 것이 목표입니다.', 4)
+  ('card-4', 'topic', 'AI 가치와 사용자 경험에 대한 기술적 지향점', $topic$
+<p><strong>AI는 도구가 아니라 협업자입니다.</strong> 기술이 인간에게 어떻게 느껴져야 하는지를 설계하고, 경계를 넘나들며 실행하는 개발자로서의 철학을 공유합니다.</p>
+
+<hr />
+
+<section>
+  <h2>1. 도구를 넘어선 협업자로서의 AI</h2>
+  <p>AI가 단순히 명령을 수행하는 도구에 머무는 한, 진짜 가치는 드러나지 않습니다. <strong>AI와 함께 사고하고, 함께 만들고, 그 과정 자체를 사용자에게 체감시키는 것</strong>이 저의 목표입니다.</p>
+  <ul>
+    <li><strong>상호작용의 재설계:</strong> 일방향적 지시가 아닌 피드백이 오가는 파트너십 구축</li>
+    <li><strong>가치의 구체화:</strong> 결과물뿐만 아니라 결과에 도달하는 논리적 과정의 시각화</li>
+  </ul>
+</section>
+
+<section>
+  <h2>2. 무의식적 몰입을 돕는 경험 설계</h2>
+  <p>좋은 기술은 사용자가 기술의 존재를 의식하지 못할 때 완성됩니다. <strong>인터페이스의 무게, 반응의 속도, 전환의 리듬</strong> — 눈에 보이지 않는 디테일이 사용자의 전체 경험을 결정합니다.</p>
+  <ul>
+    <li><strong>인터페이스의 무게:</strong> 사용자가 느끼는 심리적 부담의 최소화</li>
+    <li><strong>반응의 속도:</strong> 사고의 흐름이 끊기지 않는 즉각적인 피드백</li>
+    <li><strong>전환의 리듬:</strong> 기능과 기능 사이의 매끄러운 연결성</li>
+  </ul>
+</section>
+
+<section>
+  <h2>3. 전 영역을 넘나들며 공백을 채우는 개발자</h2>
+  <p>프론트엔드부터 백엔드, 인프라까지 필요한 곳이면 어디든 뛰어듭니다. <strong>AI를 단순한 도구가 아니라 사고의 확장으로 활용</strong>하며, 팀 내에서 비어 있는 역할을 스스로 찾아 채웁니다.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>분류</th>
+        <th>역량 및 지향점</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>기술적 범위</strong></td>
+        <td>프론트엔드, 백엔드, 인프라 전 영역을 아우르는 실행력</td>
+      </tr>
+      <tr>
+        <td><strong>AI 활용 능력</strong></td>
+        <td>단순 구현을 넘어 문제 해결을 위한 사고의 확장판으로 활용</td>
+      </tr>
+      <tr>
+        <td><strong>팀 내 역할</strong></td>
+        <td>프로젝트의 성공을 위해 필요한 지점을 선제적으로 파악 및 해결</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+$topic$, 4)
 ON CONFLICT (id) DO NOTHING;
 
 -- 경력 초기 데이터
@@ -57,7 +107,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 프로젝트 초기 데이터
 INSERT INTO projects (id, title, description, tech_stack, thumbnail_url, display_order) VALUES
   ('proj-0', 'AI 포트폴리오', '이 사이트 자체가 프로젝트입니다. CSS 3D 캐러셀, 커서 반응 조명, AI 챗봇까지 — 경험을 먼저 설계하고 기술을 입힌 인터랙티브 포트폴리오.', ARRAY['Next.js', 'Framer Motion', 'Supabase', 'Gemini'], '', 0),
-  ('proj-1', 'AI 코드 리뷰어', 'PR이 올라오면 자동으로 코드를 분석하고 리뷰 코멘트를 남기는 GitHub Action. 컨텍스트를 이해하는 리뷰를 목표로 설계.', ARRAY['TypeScript', 'GitHub Actions', 'Claude API'], '', 1),
-  ('proj-2', '실시간 협업 에디터', 'WebSocket 기반의 실시간 마크다운 협업 에디터. CRDT 알고리즘으로 충돌 없는 동시 편집을 구현.', ARRAY['React', 'WebSocket', 'Y.js', 'Node.js'], '', 2),
-  ('proj-3', '개인 지식 관리 시스템', '읽은 글, 메모, 아이디어를 벡터 임베딩으로 연결하는 PKM 도구. 관련 노트를 자동으로 추천.', ARRAY['Next.js', 'Supabase', 'pgvector', 'OpenAI'], '', 3)
+  ('proj-1', '블로그 페이지 리팩토링', 'Markdown 기반 블로그를 Notion을 단일 소스로 두는 구조로 옮기고, Next.js 14와 Notion API·React Query로 조회·캐시 전략을 정리한 리팩토링입니다.', ARRAY['Next.js 14', 'React Query', 'Tailwind CSS', 'Notion API', 'TypeScript'], '', 1),
+  ('proj-2', 'Daily Dev (Instagram Clone Coding)', '매일 읽은 개발 블로그·문서·게시글을 한곳에 모아 Instagram 피드에 가깝게 탐색하는 북마크형 웹앱입니다. 포트폴리오 도메인 root를 활용했습니다.', ARRAY['Next.js 14', 'React Query', 'Tailwind CSS', 'PWA', 'TypeScript'], '', 2),
+  ('proj-3', '포트폴리오 페이지 개발', '프로필·작업물·이력을 한 사이트에 담고, 인터랙션과 인쇄용 이력서까지 고려한 개인 포트폴리오입니다. App Router layout으로 /resume과 /main을 분리했습니다.', ARRAY['Next.js 13', 'React Query', 'Tailwind CSS', 'Framer Motion', 'TypeScript'], '', 3)
 ON CONFLICT (id) DO NOTHING;

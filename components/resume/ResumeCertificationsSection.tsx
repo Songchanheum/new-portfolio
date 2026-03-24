@@ -1,5 +1,6 @@
 import type { CertificationData } from '@/types'
 import ResumeSectionTitle from '@/components/resume/ResumeSectionTitle'
+import { ResumeRichText } from '@/components/resume/ResumeRichText'
 import { formatResumeYearMonth } from '@/components/resume/resume-format'
 
 type Props = {
@@ -43,9 +44,10 @@ export default function ResumeCertificationsSection({
                   {cert.issuedBy && (
                     <p className="text-xs font-medium text-[#1a5c38] mt-0.5">{cert.issuedBy}</p>
                   )}
-                  {cert.description && (
-                    <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">{cert.description}</p>
-                  )}
+                  <ResumeRichText
+                    html={cert.description}
+                    className="text-sm text-gray-600 mt-1.5 leading-relaxed"
+                  />
                 </div>
               </div>
             </div>

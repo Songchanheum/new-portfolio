@@ -3,7 +3,7 @@ export const runtime = 'nodejs'
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase-admin'
-import { GoogleGenAI } from '@google/genai'
+import { geminiClient, EMBEDDING_MODEL } from '@/lib/gemini'
 
 // Service Role 클라이언트 — RLS 우회, 서버 전용
 const supabaseAdmin = createClient(
@@ -35,8 +35,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     }
 
     const { id } = await context.params
-    const chunkId = parseInt(id, 10)
-    if (isNaN(chunkId)) {
+    if (!id) {
       return NextResponse.json({ error: '유효하지 않은 청크 ID' }, { status: 400 })
     }
 
@@ -61,7 +60,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const { error: processingError } = await supabaseAdmin
       .from('chatbot_kb')
       .update({ status: 'processing', content: content.trim() })
-      .eq('id', chunkId)
+      .eq('id', id)
 
     if (processingError) {
       console.error('[api/admin/chatbot-kb/chunks PATCH] processing 업데이트 실패:', processingError.message)
@@ -70,10 +69,10 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     // 2단계: Google AI로 재임베딩 생성
     try {
-      const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! })
-      const result = await genAI.models.embedContent({
-        model: 'gemini-embedding-001',
-        contents: content.trim(),
+      const result = await geminiClient.models.embedContent({
+        model: EMBEDDING_MODEL,
+        contents: [{ parts: [{ text: content.trim() }] }],
+        config: { outputDimensionality: 768 },
       })
       const embedding: number[] = result.embeddings?.[0]?.values ?? []
 
@@ -84,28 +83,26 @@ export async function PATCH(request: Request, context: RouteContext) {
           status: 'completed',
           embedding,
         })
-        .eq('id', chunkId)
+        .eq('id', id)
         .select('id, content, source_file, status, created_at')
 
       if (updateError) {
         console.error('[api/admin/chatbot-kb/chunks PATCH] 임베딩 저장 실패:', updateError.message)
-        // 임베딩 저장 실패 시 status를 'failed'로 마킹 (데이터 유실 방지 — NFR-R1)
         await supabaseAdmin
           .from('chatbot_kb')
           .update({ status: 'failed' })
-          .eq('id', chunkId)
+          .eq('id', id)
         return NextResponse.json({ error: updateError.message }, { status: 500 })
       }
 
       const updatedChunk = updatedRows?.[0] as ChunkRow | undefined
       return NextResponse.json({ data: updatedChunk ?? null })
     } catch (embeddingErr) {
-      // 임베딩 API 오류 시 status를 'failed'로 마킹 (NFR-R1)
       console.error('[api/admin/chatbot-kb/chunks PATCH] 임베딩 생성 실패:', (embeddingErr as Error).message)
       await supabaseAdmin
         .from('chatbot_kb')
         .update({ status: 'failed' })
-        .eq('id', chunkId)
+        .eq('id', id)
       return NextResponse.json(
         { error: `재임베딩 실패: ${(embeddingErr as Error).message}` },
         { status: 500 }
@@ -130,22 +127,21 @@ export async function DELETE(_request: Request, context: RouteContext) {
     }
 
     const { id } = await context.params
-    const chunkId = parseInt(id, 10)
-    if (isNaN(chunkId)) {
+    if (!id) {
       return NextResponse.json({ error: '유효하지 않은 청크 ID' }, { status: 400 })
     }
 
     const { error } = await supabaseAdmin
       .from('chatbot_kb')
       .delete()
-      .eq('id', chunkId)
+      .eq('id', id)
 
     if (error) {
       console.error('[api/admin/chatbot-kb/chunks DELETE] 삭제 실패:', error.message)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ data: { id: chunkId } })
+    return NextResponse.json({ data: { id } })
   } catch (err) {
     console.error('[api/admin/chatbot-kb/chunks DELETE] 서버 오류:', (err as Error).message)
     return NextResponse.json({ error: '서버 오류' }, { status: 500 })

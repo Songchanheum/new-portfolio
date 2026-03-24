@@ -53,6 +53,18 @@ export function useCylindricalDrag(
 
   const handleWheel = useCallback((e: WheelEvent) => {
     if (!isEntryComplete || isLocked) return
+
+    // wheel 이벤트 발원지가 스크롤 가능한 컨테이너 안에 있으면 캐러셀이 가로채지 않음
+    // (챗봇 패널 등 내부 스크롤 영역 보호)
+    let el = e.target as Element | null
+    while (el && el !== document.documentElement) {
+      const overflowY = window.getComputedStyle(el).overflowY
+      if ((overflowY === 'scroll' || overflowY === 'auto') && el.scrollHeight > el.clientHeight) {
+        return
+      }
+      el = el.parentElement
+    }
+
     e.preventDefault()
     const dominant = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY
     scrollAccumulator.current += dominant

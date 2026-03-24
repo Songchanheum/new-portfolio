@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 
 import { useCareerData } from '@/hooks/data/useCareerData'
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 
 interface CareerLayerProps {
   onClose: () => void
@@ -11,6 +12,7 @@ interface CareerLayerProps {
 
 export function CareerLayer({ onClose }: CareerLayerProps) {
   const { data: careers } = useCareerData()
+  useLockBodyScroll(true)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

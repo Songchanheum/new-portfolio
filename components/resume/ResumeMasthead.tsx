@@ -48,7 +48,11 @@ export default function ResumeMasthead({
             {RESUME_MASTHEAD.name}
           </h1>
           <p className="text-lg font-medium text-[#1a5c38] tracking-wide mb-1">{RESUME_MASTHEAD.role}</p>
-          <p className="text-sm text-gray-600 leading-relaxed max-w-md">{RESUME_MASTHEAD.bio}</p>
+          <div className="text-sm text-gray-600 leading-relaxed max-w-2xl space-y-2.5">
+            {RESUME_MASTHEAD.bioParagraphs.map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
+            ))}
+          </div>
         </div>
         {actions ? <div className="flex flex-col items-end gap-2 shrink-0">{actions}</div> : null}
       </div>

@@ -1,5 +1,6 @@
 import type { CareerDetailData } from '@/types'
 import ResumeSectionTitle from '@/components/resume/ResumeSectionTitle'
+import { ResumeRichText } from '@/components/resume/ResumeRichText'
 
 type Props = {
   careers: CareerDetailData[]
@@ -30,14 +31,14 @@ export default function ResumeCareerArticles({
               <p className="text-sm font-medium text-[#1a5c38] mt-0.5">{career.role}</p>
               <p className="text-xs text-gray-500 mt-1">{career.period}</p>
             </header>
-            <p className="text-sm text-gray-700 leading-7">{career.description}</p>
-            {career.detailDescription && (
-              <p className="text-sm text-gray-700 leading-7 mt-3 whitespace-pre-line">{career.detailDescription}</p>
-            )}
+            <ResumeRichText html={career.description} className="text-sm leading-7" />
+            <ResumeRichText html={career.detailDescription} className="text-sm leading-7 mt-3" />
             {career.achievements.length > 0 && (
-              <ul className="mt-3 space-y-1.5 list-disc pl-5 text-sm text-gray-700">
-                {career.achievements.map((a) => (
-                  <li key={a}>{a}</li>
+              <ul className="mt-3 space-y-2 list-disc pl-5 text-sm text-gray-700 marker:text-[#1a5c38]">
+                {career.achievements.map((a, i) => (
+                  <li key={`${career.id}-ach-${i}`}>
+                    <ResumeRichText html={a} className="text-sm leading-7 [&_p]:mb-1 [&_p:last-child]:mb-0" />
+                  </li>
                 ))}
               </ul>
             )}

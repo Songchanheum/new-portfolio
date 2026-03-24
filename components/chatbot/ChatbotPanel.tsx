@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import { cn } from '@/lib/utils'
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import type { ChatMessage } from '@/types'
 import { ChatbotToolBridge, type ToolCall } from './ChatbotToolBridge'
 
@@ -21,6 +22,8 @@ export function ChatbotPanel({ isOpen, onClose, cardCount = 5 }: ChatbotPanelPro
   const [isWaiting, setIsWaiting] = useState(false)
   const [activeToolCalls, setActiveToolCalls] = useState<ToolCall[]>([])
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useLockBodyScroll(isOpen)
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })

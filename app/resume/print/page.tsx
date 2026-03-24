@@ -114,9 +114,6 @@ export default async function ResumePrintPage() {
       displayOrder: r.display_order,
     })) ?? []
 
-  const skillsPageClass = skills.length > 0 ? 'print-page-start' : ''
-  const indexPageClass = skills.length === 0 ? 'print-page-start' : ''
-
   return (
     <main
       className="min-h-screen bg-white resume-sans"
@@ -135,11 +132,10 @@ export default async function ResumePrintPage() {
           인쇄 또는 &quot;PDF로 저장&quot;을 선택하세요.
         </p>
 
-        <ResumeMasthead personalVisibility="always" headerClassName="print-avoid-break" />
-
-        <hr className="border-gray-300 my-0" />
-
-        <ResumeSkillsGrid skills={skills} sectionClassName={skillsPageClass} />
+        <div className="print-masthead-skills-block">
+          <ResumeMasthead personalVisibility="always" />
+          <ResumeSkillsGrid skills={skills} printSectionTitle />
+        </div>
 
         <ResumeCareerArticles
           careers={careers}

@@ -2,12 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
+import TiptapEditor from '@/components/wysiwyg/TiptapEditor'
 import type { CardData, CardType } from '@/types'
+
+// WYSIWYG 에디터를 사용하는 카드 타입
+const WYSIWYG_TYPES: CardType[] = ['intro', 'developer', 'topic']
 
 // 카드 타입 선택 옵션
 const CARD_TYPE_OPTIONS: { value: CardType; label: string }[] = [
   { value: 'intro', label: 'Intro (소개)' },
-  { value: 'developer', label: 'Developer (개발자)' },
+  { value: 'developer', label: 'Developer (강점)' },
   { value: 'career', label: 'Career (경력)' },
   { value: 'projects', label: 'Projects (프로젝트)' },
   { value: 'topic', label: 'Topic (주제)' },
@@ -268,15 +272,24 @@ export default function AdminCardsPage() {
           </div>
           <div className="mb-4">
             <label className="block text-xs text-gray-500 mb-1">상세 내용</label>
-            <textarea
-              value={createForm.detail}
-              onChange={(e) =>
-                setCreateForm((f) => ({ ...f, detail: e.target.value }))
-              }
-              placeholder="카드 상세 설명 (선택)"
-              rows={3}
-              className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
-            />
+            {WYSIWYG_TYPES.includes(createForm.type)
+              ? (
+                <TiptapEditor
+                  content={createForm.detail}
+                  onChange={(html) => setCreateForm((f) => ({ ...f, detail: html }))}
+                />
+              ) : (
+                <textarea
+                  value={createForm.detail}
+                  onChange={(e) =>
+                    setCreateForm((f) => ({ ...f, detail: e.target.value }))
+                  }
+                  placeholder="카드 상세 설명 (선택)"
+                  rows={3}
+                  className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
+                />
+              )
+            }
           </div>
           <div className="flex justify-end gap-2">
             <button
@@ -368,14 +381,23 @@ export default function AdminCardsPage() {
                   </div>
                   <div className="mb-4">
                     <label className="block text-xs text-gray-500 mb-1">상세 내용</label>
-                    <textarea
-                      value={editForm.detail}
-                      onChange={(e) =>
-                        setEditForm((f) => ({ ...f, detail: e.target.value }))
-                      }
-                      rows={3}
-                      className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
-                    />
+                    {WYSIWYG_TYPES.includes(editForm.type)
+                      ? (
+                        <TiptapEditor
+                          content={editForm.detail}
+                          onChange={(html) => setEditForm((f) => ({ ...f, detail: html }))}
+                        />
+                      ) : (
+                        <textarea
+                          value={editForm.detail}
+                          onChange={(e) =>
+                            setEditForm((f) => ({ ...f, detail: e.target.value }))
+                          }
+                          rows={3}
+                          className="w-full px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-gray-500 text-sm resize-none"
+                        />
+                      )
+                    }
                   </div>
                   <div className="flex justify-end gap-2">
                     <button

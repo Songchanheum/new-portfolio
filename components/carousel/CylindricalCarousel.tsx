@@ -12,6 +12,8 @@ import { PortfolioCard } from './PortfolioCard'
 import { CardDetailModal } from './CardDetailModal'
 
 const CARD_WIDTH = 320
+/** 활성 카드 minHeight·본문 3줄에 맞춘 3D 그룹 기준 높이 */
+const CAROUSEL_STAGE_HEIGHT = 220
 const CAROUSEL_RADIUS = 350
 
 const BASE_SCATTER: { x: number; y: number }[] = [
@@ -36,6 +38,7 @@ interface CylindricalCarouselProps {
   mouseX: MotionValue<number>
   mouseY: MotionValue<number>
   onOpenLayer: (layer: 'career' | 'projects') => void
+  isLocked?: boolean
 }
 
 export default function CylindricalCarousel({
@@ -45,6 +48,7 @@ export default function CylindricalCarousel({
   mouseX,
   mouseY,
   onOpenLayer,
+  isLocked = false,
 }: CylindricalCarouselProps) {
   const [isEntryComplete, setIsEntryComplete] = useState(false)
   const [isCardHovered, setIsCardHovered] = useState(false)
@@ -63,7 +67,7 @@ export default function CylindricalCarousel({
   const anglePerCard = cardCount > 0 ? 360 / cardCount : 72
 
   const { springRotation, onPointerDown, onPointerMove, onPointerUp, goToIndex } =
-    useCylindricalDrag(setCurrentCardIndex, isEntryComplete, cardCount, isCardHovered)
+    useCylindricalDrag(setCurrentCardIndex, isEntryComplete, cardCount, isCardHovered || !!selectedCard || isLocked)
 
   const handleCardClick = (card: CardData, index: number) => {
     if (index !== currentCardIndex) {
@@ -103,7 +107,7 @@ export default function CylindricalCarousel({
             transformStyle: 'preserve-3d',
             rotateY: springRotation,
             width: CARD_WIDTH,
-            height: 192,
+            height: CAROUSEL_STAGE_HEIGHT,
             ['--carousel-radius' as string]: `${CAROUSEL_RADIUS}px`,
           }}
           onPointerDown={onPointerDown}

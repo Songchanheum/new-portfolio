@@ -1,5 +1,6 @@
 import type { ActivityData } from '@/types'
 import ResumeSectionTitle from '@/components/resume/ResumeSectionTitle'
+import { ResumeRichText } from '@/components/resume/ResumeRichText'
 import { formatResumeYearMonth } from '@/components/resume/resume-format'
 
 type Props = {
@@ -40,9 +41,10 @@ export default function ResumeActivitiesSection({
                   >
                     {activity.title}
                   </h3>
-                  {activity.description && (
-                    <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">{activity.description}</p>
-                  )}
+                  <ResumeRichText
+                    html={activity.description}
+                    className="text-sm text-gray-600 mt-1.5 leading-relaxed"
+                  />
                   {activity.blogUrl && (
                     <p className="text-xs text-gray-400 mt-1 break-all">{activity.blogUrl}</p>
                   )}

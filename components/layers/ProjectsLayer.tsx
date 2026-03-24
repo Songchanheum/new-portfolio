@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 
 import { cn } from '@/lib/utils'
 import { useProjectsData } from '@/hooks/data/useProjectsData'
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 
 interface ProjectsLayerProps {
   onClose: () => void
@@ -13,6 +14,7 @@ interface ProjectsLayerProps {
 
 export function ProjectsLayer({ onClose, highlightedId }: ProjectsLayerProps) {
   const { data: projects } = useProjectsData()
+  useLockBodyScroll(true)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

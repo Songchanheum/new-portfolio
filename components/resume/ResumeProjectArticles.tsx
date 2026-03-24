@@ -1,5 +1,6 @@
 import type { ProjectDetailData } from '@/types'
 import ResumeSectionTitle from '@/components/resume/ResumeSectionTitle'
+import { ResumeRichText } from '@/components/resume/ResumeRichText'
 
 type Props = {
   projects: ProjectDetailData[]
@@ -36,13 +37,9 @@ export default function ResumeProjectArticles({
                 <p className="text-xs text-gray-400 mt-1 break-all">{project.projectUrl}</p>
               )}
             </header>
-            <p className="text-sm text-gray-700 leading-7">{project.description}</p>
-            {project.detailDescription && (
-              <p className="text-sm text-gray-700 leading-7 mt-3 whitespace-pre-line">{project.detailDescription}</p>
-            )}
-            {project.contributions && (
-              <p className="text-sm text-gray-700 leading-7 mt-3 whitespace-pre-line">{project.contributions}</p>
-            )}
+            <ResumeRichText html={project.description} className="text-sm leading-7" />
+            <ResumeRichText html={project.detailDescription} className="text-sm leading-7 mt-3" />
+            <ResumeRichText html={project.contributions} className="text-sm leading-7 mt-3" />
             {project.techStack.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {project.techStack.map((tech) => (
