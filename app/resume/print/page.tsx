@@ -139,20 +139,18 @@ export default async function ResumePrintPage() {
 
         <hr className="border-gray-300 my-0" />
 
-        <ResumeSkillsGrid
-          skills={skills}
-          sectionClassName={skillsPageClass}
+        <ResumeSkillsGrid skills={skills} sectionClassName={skillsPageClass} />
+
+        <ResumeCareerArticles
+          careers={careers}
+          sectionClassName="print-page-start"
           printSectionTitle
         />
-
-        <ResumeIndexSection
-          mode="static"
-          sectionClassName={`border-b border-gray-300 ${indexPageClass}`.trim()}
+        <ResumeProjectArticles
+          projects={projects}
+          sectionClassName="print-page-start"
           printSectionTitle
         />
-
-        <ResumeCareerArticles careers={careers} sectionClassName="print-page-start" printSectionTitle />
-        <ResumeProjectArticles projects={projects} sectionClassName="print-page-start" printSectionTitle />
         <ResumeCertificationsSection
           certifications={certs}
           sectionClassName="print-page-start"
