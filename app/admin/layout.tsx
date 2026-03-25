@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: '/admin/certifications', label: 'Certifications' },
   { href: '/admin/activities', label: 'Activities' },
   { href: '/admin/chatbot-kb', label: 'Chatbot KB' },
+  { href: '/admin/chat-logs', label: '챗봇 로그' },
 ] as const
 
 export default function AdminLayout({

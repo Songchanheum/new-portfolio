@@ -20,8 +20,8 @@ export async function GET() {
       return NextResponse.json({ error: '인증되지 않은 요청' }, { status: 401 })
     }
 
-    // 4개 테이블 동시 조회 (병렬 처리로 성능 최적화)
-    const [cardsResult, careerResult, projectsResult, chatbotKbResult] = await Promise.all([
+    // 5개 테이블 동시 조회 (병렬 처리로 성능 최적화)
+    const [cardsResult, careerResult, projectsResult, chatbotKbResult, chatLogsResult] = await Promise.all([
       supabaseAdmin
         .from('cards')
         .select('updated_at', { count: 'exact', head: false })
@@ -42,6 +42,11 @@ export async function GET() {
         .select('created_at', { count: 'exact', head: false })
         .order('created_at', { ascending: false })
         .limit(1),
+      supabaseAdmin
+        .from('chat_logs')
+        .select('created_at', { count: 'exact', head: false })
+        .order('created_at', { ascending: false })
+        .limit(1),
     ])
 
     // 에러 로깅 (개별 테이블 에러는 전체 실패로 처리하지 않음)
@@ -49,6 +54,7 @@ export async function GET() {
     if (careerResult.error) console.error('[api/admin/stats] career 조회 실패:', careerResult.error.message)
     if (projectsResult.error) console.error('[api/admin/stats] projects 조회 실패:', projectsResult.error.message)
     if (chatbotKbResult.error) console.error('[api/admin/stats] chatbot_kb 조회 실패:', chatbotKbResult.error.message)
+    if (chatLogsResult.error) console.error('[api/admin/stats] chat_logs 조회 실패:', chatLogsResult.error.message)
 
     const stats: AdminStats = {
       cards: {
@@ -66,6 +72,10 @@ export async function GET() {
       chatbotKb: {
         count: chatbotKbResult.count ?? 0,
         lastModified: chatbotKbResult.data?.[0]?.created_at ?? null,
+      },
+      chatLogs: {
+        count: chatLogsResult.count ?? 0,
+        lastModified: chatLogsResult.data?.[0]?.created_at ?? null,
       },
     }
 

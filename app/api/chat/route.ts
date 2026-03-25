@@ -106,6 +106,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
     const message = body?.message
+    const sessionId = typeof body?.sessionId === 'string' ? body.sessionId : null
 
     if (typeof message !== 'string' || message.trim().length === 0) {
       return Response.json({ error: '메시지가 비어있습니다' }, { status: 400 })
@@ -127,9 +128,12 @@ export async function POST(req: Request) {
       },
     })
 
+    const userMessage = message.trim()
+
     const stream = new ReadableStream({
       async start(controller) {
         const enc = new TextEncoder()
+        let fullAssistantText = ''
         try {
           // Collect all parts from phase 1
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,6 +147,7 @@ export async function POST(req: Request) {
               modelParts.push(part)
               if (part.text) {
                 controller.enqueue(enc.encode(part.text))
+                fullAssistantText += part.text
                 hasText = true
               }
               if (part.functionCall) {
@@ -184,11 +189,23 @@ export async function POST(req: Request) {
               const text = chunk.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
               if (text) {
                 controller.enqueue(enc.encode(text))
+                fullAssistantText += text
               }
             }
           } else if (toolCalls.length > 0 && hasText) {
             // Text came first, then tool call — append tool prefix at end for client
             controller.enqueue(enc.encode(`\n__TOOLS__:${JSON.stringify(toolCalls)}\n`))
+          }
+
+          // 대화 기록 저장 (fire and forget)
+          if (fullAssistantText && sessionId) {
+            supabaseAdmin.from('chat_logs').insert({
+              session_id: sessionId,
+              user_message: userMessage,
+              assistant_message: fullAssistantText,
+            }).then(({ error }) => {
+              if (error) console.error('[chat/route] 대화 저장 실패:', error.message)
+            })
           }
         } catch (err) {
           console.error('[chat/route] 스트리밍 에러:', (err as Error).message)

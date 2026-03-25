@@ -30,6 +30,7 @@ export function ChatbotPanel({ isOpen, onClose, cardCount = 5 }: ChatbotPanelPro
   const [isWaiting, setIsWaiting] = useState(false)
   const [activeToolCalls, setActiveToolCalls] = useState<ToolCall[]>([])
   const scrollRef = useRef<HTMLDivElement>(null)
+  const sessionIdRef = useRef<string>(crypto.randomUUID())
 
   useLockBodyScroll(isOpen)
 
@@ -56,7 +57,7 @@ export function ChatbotPanel({ isOpen, onClose, cardCount = 5 }: ChatbotPanelPro
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: trimmed }),
+        body: JSON.stringify({ message: trimmed, sessionId: sessionIdRef.current }),
       })
 
       if (!res.ok || !res.body) throw new Error('API error')
@@ -161,6 +162,11 @@ export function ChatbotPanel({ isOpen, onClose, cardCount = 5 }: ChatbotPanelPro
               >
                 ✕
               </button>
+            </div>
+
+            {/* 안내 배너 */}
+            <div className="px-5 py-2.5 bg-white/3 border-b border-white/8 text-xs text-white/35 leading-relaxed">
+              대화 내용은 암호화되어 저장됩니다. 채용·협업 관련 문의는 오너에게 이메일로 자동 전달됩니다.
             </div>
 
             {/* 메시지 목록 */}

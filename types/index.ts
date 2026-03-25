@@ -61,6 +61,7 @@ export type AdminStats = {
   career: AdminTableStat
   projects: AdminTableStat
   chatbotKb: AdminTableStat
+  chatLogs: AdminTableStat
 }
 
 // Resume 전용 타입

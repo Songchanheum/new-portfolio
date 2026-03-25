@@ -10,6 +10,7 @@ const STAT_CARDS = [
   { key: 'career' as const, label: 'Career', href: '/admin/career', description: '경력 타임라인' },
   { key: 'projects' as const, label: 'Projects', href: '/admin/projects', description: '프로젝트 그리드' },
   { key: 'chatbotKb' as const, label: 'Chatbot KB', href: '/admin/chatbot-kb', description: 'RAG 지식베이스' },
+  { key: 'chatLogs' as const, label: 'Chat Logs', href: '/admin/chat-logs', description: '방문자 대화 기록' },
 ] as const
 
 function formatDate(iso: string | null): string {
