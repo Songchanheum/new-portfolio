@@ -38,8 +38,8 @@ export default function ResumeProjectArticles({
               )}
             </header>
             <ResumeRichText html={project.description} className="text-sm leading-7" />
-            <ResumeRichText html={project.detailDescription} className="text-sm leading-7 mt-3" />
-            <ResumeRichText html={project.contributions} className="text-sm leading-7 mt-3" />
+            <ResumeRichText html={project.detailDescription} className="text-sm leading-7 mt-3 print:hidden" />
+            <ResumeRichText html={project.contributions} className="text-sm leading-7 mt-3 print:hidden" />
             {project.techStack.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {project.techStack.map((tech) => (

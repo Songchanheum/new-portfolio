@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase-admin'
 import type { ProjectDetailData } from '@/types'
+import ProjectPortfolioPDFButton from '@/components/resume/ProjectPortfolioPDFButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -48,9 +49,12 @@ export default async function ProjectsHubPage() {
                 프로젝트
               </h1>
             </div>
-            <Link href="/resume" className="no-print text-xs text-gray-400 hover:text-[#1a5c38] transition-colors">
-              ← 표지로
-            </Link>
+            <div className="no-print flex items-center gap-3">
+              <ProjectPortfolioPDFButton />
+              <Link href="/resume" className="text-xs text-gray-400 hover:text-[#1a5c38] transition-colors">
+                ← 표지로
+              </Link>
+            </div>
           </div>
         </header>
 

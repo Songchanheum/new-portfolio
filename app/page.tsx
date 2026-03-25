@@ -52,9 +52,31 @@ export default function Home() {
     >
       <GlobalLighting mouseX={mouseX} mouseY={mouseY} />
       {cardsLoading ? (
-        <p className="text-white/45 text-sm tracking-wide" role="status">
-          카드를 불러오는 중…
-        </p>
+        <div className="relative flex items-center justify-center" style={{ perspective: '900px' }} aria-hidden>
+          {[
+            { x: -220, z: -60, scale: 0.88, opacity: 0.25 },
+            { x: 0,    z: 0,   scale: 1,    opacity: 0.55 },
+            { x: 220,  z: -60, scale: 0.88, opacity: 0.25 },
+          ].map((pos, i) => (
+            <div
+              key={i}
+              className="absolute w-80 h-[184px] rounded-xl border border-white/8 overflow-hidden"
+              style={{
+                transform: `translateX(${pos.x}px) translateZ(${pos.z}px) scale(${pos.scale})`,
+                opacity: pos.opacity,
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
+              }}
+            >
+              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/6 to-transparent" />
+              <div className="p-5 flex flex-col gap-3">
+                <div className="h-2 w-10 rounded-full bg-white/10" />
+                <div className="h-px w-12 rounded-full bg-white/8" />
+                <div className="h-3.5 w-48 rounded-md bg-white/10" />
+                <div className="h-3.5 w-36 rounded-md bg-white/7" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : cards.length === 0 ? (
         <div className="text-center text-white/50 text-sm max-w-sm px-6 space-y-2" role="status">
           <p>표시할 카드가 없습니다.</p>

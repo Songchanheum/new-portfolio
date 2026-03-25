@@ -47,6 +47,9 @@ export async function POST(request: Request) {
       )
     }
 
+    // 버킷이 없으면 자동 생성 (이미 존재하면 에러 무시)
+    await supabaseAdmin.storage.createBucket('wysiwyg-images', { public: true }).catch(() => {})
+
     // 파일명 sanitize 후 업로드 경로 생성
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
     const path = `${Date.now()}-${sanitizedName}`
@@ -57,8 +60,8 @@ export async function POST(request: Request) {
       .upload(path, buffer, { contentType: file.type })
 
     if (uploadError) {
-      console.error('[api/admin/upload-image POST] 업로드 실패:', uploadError.message)
-      return NextResponse.json({ error: '이미지 업로드에 실패했습니다' }, { status: 500 })
+      console.error('[api/admin/upload-image POST] 업로드 실패:', uploadError.message, uploadError)
+      return NextResponse.json({ error: `이미지 업로드에 실패했습니다: ${uploadError.message}` }, { status: 500 })
     }
 
     // Public URL 반환

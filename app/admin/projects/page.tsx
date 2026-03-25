@@ -331,14 +331,9 @@ export default function AdminProjectsPage() {
 
           <div>
             <label className="block text-sm text-gray-400 mb-1">기여 내용</label>
-            <textarea
-              value={createForm.contributions}
-              onChange={(e) =>
-                setCreateForm((f) => ({ ...f, contributions: e.target.value }))
-              }
-              placeholder="contributions — 기여·성과 요약"
-              rows={3}
-              className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 resize-none"
+            <TiptapEditor
+              content={createForm.contributions}
+              onChange={(html) => setCreateForm((f) => ({ ...f, contributions: html }))}
             />
           </div>
 
@@ -493,13 +488,9 @@ export default function AdminProjectsPage() {
 
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">기여 내용</label>
-                    <textarea
-                      value={editForm.contributions}
-                      onChange={(e) =>
-                        setEditForm((f) => ({ ...f, contributions: e.target.value }))
-                      }
-                      rows={3}
-                      className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 resize-none"
+                    <TiptapEditor
+                      content={editForm.contributions}
+                      onChange={(html) => setEditForm((f) => ({ ...f, contributions: html }))}
                     />
                   </div>
 
@@ -597,10 +588,10 @@ export default function AdminProjectsPage() {
                       </p>
                     )}
                     {project.detailDescription && (
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">{project.detailDescription}</p>
+                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">{project.detailDescription.replace(/<[^>]+>/g, ' ').trim()}</p>
                     )}
                     {project.contributions && (
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">{project.contributions}</p>
+                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">{project.contributions.replace(/<[^>]+>/g, ' ').trim()}</p>
                     )}
                     {project.techStack.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-2">

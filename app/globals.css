@@ -1,11 +1,38 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@keyframes shimmer {
+  to { transform: translateX(200%); }
+}
+
 @media print {
   .prose li p {
     margin-top: 0;
     margin-bottom: 0;
   }
+}
+
+/* 위지윅 이미지 정렬 — 에디터 + 렌더러 공통 */
+img.img-align-left {
+  float: left;
+  margin-right: 1.5rem;
+  margin-bottom: 0.5rem;
+  max-width: 50%;
+}
+img.img-align-right {
+  float: right;
+  margin-left: 1.5rem;
+  margin-bottom: 0.5rem;
+  max-width: 50%;
+}
+img.img-align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+img.img-align-full {
+  display: block;
+  width: 100%;
 }
 
 /* 카드 모달 등 다크 UI — 기본 흰 스크롤바 완화 */
