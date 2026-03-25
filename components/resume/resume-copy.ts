@@ -17,6 +17,12 @@ export const RESUME_PERSONAL = {
   phone: '010-4100-7802',
 } as const
 
+export const RESUME_LINKS = [
+  { label: 'GitHub',      href: 'https://github.com/Songchanheum' },
+  { label: 'Portfolio',   href: 'https://portfolio.songsdev.kr/' },
+  { label: 'Resume',      href: 'https://portfolio.songsdev.kr/resume' },
+] as const
+
 export const SKILL_CATEGORY_LABEL: Record<string, string> = {
   frontend: 'Frontend',
   backend: 'Backend',

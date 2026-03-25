@@ -10,6 +10,16 @@
     margin-top: 0;
     margin-bottom: 0;
   }
+  img {
+    max-height: 300px !important;
+    width: auto !important;
+    object-fit: contain;
+  }
+  img.img-align-full {
+    max-height: 300px !important;
+    width: 100% !important;
+    object-fit: contain;
+  }
 }
 
 /* 위지윅 이미지 정렬 — 에디터 + 렌더러 공통 */
