@@ -132,7 +132,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             <h2 className="text-xs font-bold tracking-[0.2em] text-[#1a5c38] uppercase mb-3 resume-serif" style={{ fontFamily: 'var(--font-serif)' }}>
               기여 내용
             </h2>
-            <WysiwygRenderer html={project.contributions} className="text-sm leading-7 [&_li]:my-0 [&_li_p]:my-0" />
+            <WysiwygRenderer html={sanitizeHtml(project.contributions)} className="text-sm leading-7 [&_li]:my-0 [&_li_p]:my-0" />
           </section>
         )}
 

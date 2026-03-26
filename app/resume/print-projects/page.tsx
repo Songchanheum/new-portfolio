@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-admin'
 import type { ProjectDetailData } from '@/types'
 import PrintAutoTrigger from '@/components/resume/PrintAutoTrigger'
 import { ResumeRichText } from '@/components/resume/ResumeRichText'
+import { sanitizeHtml } from '@/lib/wysiwyg'
 
 export const dynamic = 'force-dynamic'
 
@@ -99,12 +100,12 @@ export default async function PrintProjectsPage() {
 
               {/* 상세 내용 */}
               {project.detailDescription && (
-                <ResumeRichText html={project.detailDescription} className="text-sm leading-7 [&_li]:my-0 [&_li_p]:my-0" />
+                <ResumeRichText html={sanitizeHtml(project.detailDescription)} className="text-sm leading-7 [&_li]:my-0 [&_li_p]:my-0" />
               )}
 
               {/* 기여 */}
               {project.contributions && (
-                <ResumeRichText html={project.contributions} className="text-sm leading-7 mt-4 [&_li]:my-0 [&_li_p]:my-0" />
+                <ResumeRichText html={sanitizeHtml(project.contributions)} className="text-sm leading-7 mt-4 [&_li]:my-0 [&_li_p]:my-0" />
               )}
 
               {/* 기술스택 */}

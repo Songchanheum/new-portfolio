@@ -1,6 +1,7 @@
 import type { ProjectDetailData } from '@/types'
 import ResumeSectionTitle from '@/components/resume/ResumeSectionTitle'
 import { ResumeRichText } from '@/components/resume/ResumeRichText'
+import { sanitizeHtml } from '@/lib/wysiwyg'
 
 type Props = {
   projects: ProjectDetailData[]
@@ -37,9 +38,9 @@ export default function ResumeProjectArticles({
                 <p className="text-xs text-gray-400 mt-1 break-all">{project.projectUrl}</p>
               )}
             </header>
-            <ResumeRichText html={project.description} className="text-sm leading-7" />
-            <ResumeRichText html={project.detailDescription} className="text-sm leading-7 mt-3 print:hidden" />
-            <ResumeRichText html={project.contributions} className="text-sm leading-7 mt-3 print:hidden" />
+            <ResumeRichText html={sanitizeHtml(project.description)} className="text-sm leading-7" />
+            <ResumeRichText html={sanitizeHtml(project.detailDescription)} className="text-sm leading-7 mt-3 print:hidden" />
+            <ResumeRichText html={sanitizeHtml(project.contributions)} className="text-sm leading-7 mt-3 print:hidden" />
             {project.techStack.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {project.techStack.map((tech) => (
