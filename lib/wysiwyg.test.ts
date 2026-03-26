@@ -84,7 +84,7 @@ describe('sanitizeHtml', () => {
     const input =
       '<section><h2>제목</h2><hr /><table><thead><tr><th>a</th></tr></thead><tbody><tr><td>b</td></tr></tbody></table></section>'
     const expected =
-      '<section><h2>제목</h2><hr><table><thead><tr><th>a</th></tr></thead><tbody><tr><td>b</td></tr></tbody></table></section>'
+      '<section><h2>제목</h2><hr /><table><thead><tr><th>a</th></tr></thead><tbody><tr><td>b</td></tr></tbody></table></section>'
     expect(sanitizeHtml(input)).toBe(expected)
   })
 })
